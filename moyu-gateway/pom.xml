@@ -17,7 +17,25 @@
     <dependencies>
         <!-- 本工程的其它模块 -->
 
-        <!-- 开源工具 -->
+        <!-- 开源依赖 -->
+        <!-- spring-cloud-gateway -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-gateway</artifactId>
+        </dependency>
+
+        <!-- 使用spring-cloud-huawei 参考：https://support.huaweicloud.com/devg-cse/cse_04_0009.html -->
+        <dependency>
+            <groupId>com.huaweicloud</groupId>
+            <artifactId>spring-cloud-starter-huawei-service-engine</artifactId>
+            <version>1.11.13-2021.0.x</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.huaweicloud</groupId>
+                    <artifactId>spring-cloud-starter-huawei-swagger</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
     </dependencies>
 
