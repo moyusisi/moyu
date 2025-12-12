@@ -1,5 +1,5 @@
 # idea ignore
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -22,6 +22,10 @@ target/
 *.patch
 *.tmp
 
+# system ignore
+.DS_Store
+Thumbs.db
+
 # package ignore
 *.jar
 *.war
@@ -32,13 +36,16 @@ target/
 *.rar
 
 # Editor directories and files
-.vscode/
+.vscode
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.local
 
-# system ignore
-.DS_Store
-Thumbs.db
+# node ignore
+node_modules/
+dist/
+
+package-lock.json
+yarn.lock
