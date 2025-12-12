@@ -25,7 +25,7 @@
 
     <dependencyManagement>
         <dependencies>
-            <!--Spring Cloud  -->
+            <!-- spring-cloud 参考：https://spring.io/projects/spring-cloud#overview -->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
