@@ -22,8 +22,9 @@ management:
 
 # spring配置
 spring:
-  # spring-cloud gateway配置
+  # spring-cloud
   cloud:
+    #  gateway 配置
     gateway:
       discovery:
         # 定位器
