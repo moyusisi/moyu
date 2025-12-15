@@ -42,3 +42,38 @@ spring:
           #uri: lb://xx-service-name           # 路由的目标地址,lb是负载均衡，后面是服务名称
           predicates:
             - Path=/auth/**                # 断言，路径匹配。以/user/开头的所有请求
+
+    # huawei服务治理配置(服务注册发现)
+    servicecomb:
+      # 服务注册
+      service:
+        # 微服务名称（不填则为配置的spring.application.name值）
+        name: ${spring.application.name}
+        # 微服务所属应用名称（应用名称相同的微服务之间才可以相互发现，常用作应用隔离）
+        application: default
+        # 微服务注册环境（环境名称相同的微服务之间才可以相互发现，常用作环境隔离）
+        environment: production
+      # 服务发现
+      discovery:
+        # 是否开启服务发现能力
+        enabled: true
+        # 心跳检测时间，单位为秒
+        healthCheckInterval: 15
+        # 拉取实例的轮询时间，单位为毫秒
+        pollInterval: 15000
+        # 无损下线等待时长，单位为毫秒
+        waitTimeForShutDownInMillis: 15000
+        # 注册发现地址（必填）
+        address: http://127.0.0.1:30100
+        # 服务名称（必填）
+        appName: basic-application
+        # 服务版本号（服务升级时需要，防止注册失败）
+        version: 1.0.0.0
+      # 配置中心
+      config:
+        # 是否启用动态配置
+        enabled: true
+        # 配置中心地址
+        serverAddr: http://127.0.0.1:30110
+        # 配置中心类型 （kie或config-center，推荐使用kie）
+        serverType: kie
