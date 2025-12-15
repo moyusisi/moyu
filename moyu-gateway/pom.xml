@@ -18,6 +18,11 @@
         <!-- 本工程的其它模块 -->
 
         <!-- 开源依赖 -->
+        <!-- actuator 监控 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
         <!-- spring-cloud-gateway -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -28,13 +33,16 @@
         <dependency>
             <groupId>com.huaweicloud</groupId>
             <artifactId>spring-cloud-starter-huawei-service-engine</artifactId>
-            <version>1.11.13-2021.0.x</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.huaweicloud</groupId>
                     <artifactId>spring-cloud-starter-huawei-swagger</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.huaweicloud</groupId>
+            <artifactId>spring-cloud-starter-huawei-service-engine-gateway</artifactId>
         </dependency>
 
     </dependencies>

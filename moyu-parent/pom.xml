@@ -33,6 +33,14 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- spring cloud huawei 参考：https://support.huaweicloud.com/devg-cse/cse_04_0009.html -->
+            <dependency>
+                <groupId>com.huaweicloud</groupId>
+                <artifactId>spring-cloud-huawei-bom</artifactId>
+                <version>1.11.13-2021.0.x</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- mybatis-plus 增强CRUD 参考：https://baomidou.com/introduce/ -->
             <dependency>
                 <groupId>com.baomidou</groupId>

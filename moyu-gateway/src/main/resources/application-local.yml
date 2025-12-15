@@ -1,0 +1,43 @@
+# 监控管理
+management:
+  endpoints:
+    web:
+      exposure:
+        # web暴露端点包含，默认[health]
+        include: health
+  endpoint:
+    health: # 开启health 配置从不展示细节
+      probes:
+        # 是否启用活体和就绪探测
+        enabled: true
+      # 何时显示完整的运行状况详细信息
+      show-details: never
+  health:
+    # 存活探针: /actuator/health/liveness
+    livenessState:
+      enabled: true
+    # 就绪探针: /actuator/health/readiness
+    readinessState:
+      enabled: true
+
+# spring配置
+spring:
+  # spring-cloud gateway配置
+  cloud:
+    gateway:
+      discovery:
+        # 定位器
+        locator:
+          enabled: true      # 开启从注册中心动态创建路由的功能，利用微服务名进行路由
+      routes:
+        - id: xxx-service-routh               # 路由的ID，没有固定规则但要求唯一，建议配合服务名
+          uri: http://localhost:8001          # 匹配后提供服务的路由地址
+          #uri: lb://xx-service-name           # 路由的目标地址,lb是负载均衡，后面是服务名称
+          predicates:
+            - Path=/user/**                # 断言，路径匹配。以/user/开头的所有请求
+
+        - id: xxx-service-routh2               # 路由的ID，没有固定规则但要求唯一，建议配合服务名
+          uri: http://localhost:8002          # 匹配后提供服务的路由地址
+          #uri: lb://xx-service-name           # 路由的目标地址,lb是负载均衡，后面是服务名称
+          predicates:
+            - Path=/auth/**                # 断言，路径匹配。以/user/开头的所有请求
