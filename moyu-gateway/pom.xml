@@ -32,16 +32,6 @@
         <!-- 使用spring-cloud-huawei 参考：https://support.huaweicloud.com/devg-cse/cse_04_0009.html -->
         <dependency>
             <groupId>com.huaweicloud</groupId>
-            <artifactId>spring-cloud-starter-huawei-service-engine</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.huaweicloud</groupId>
-                    <artifactId>spring-cloud-starter-huawei-swagger</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.huaweicloud</groupId>
             <artifactId>spring-cloud-starter-huawei-service-engine-gateway</artifactId>
         </dependency>
 

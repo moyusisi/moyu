@@ -49,10 +49,10 @@ spring:
       service:
         # 微服务名称（不填则为配置的spring.application.name值）
         name: ${spring.application.name}
-        # 微服务所属应用名称（应用名称相同的微服务之间才可以相互发现，常用作应用隔离）
+        # 微服务所属应用名称，默认为default。应用名称相同的微服务之间才可以相互发现，常用作应用隔离（版本1.10.2-2021.0.x及之前通过discovery.appName配置）
         application: default
-        # 微服务注册环境（环境名称相同的微服务之间才可以相互发现，常用作环境隔离）
-        environment: production
+        # 微服务注册环境，默认为空。环境名称相同的微服务之间才可以相互发现，常用作环境隔离
+        environment:
       # 服务发现
       discovery:
         # 是否开启服务发现能力
@@ -65,10 +65,6 @@ spring:
         waitTimeForShutDownInMillis: 15000
         # 注册发现地址（必填）
         address: http://127.0.0.1:30100
-        # 服务名称（必填）
-        appName: basic-application
-        # 服务版本号（服务升级时需要，防止注册失败）
-        version: 1.0.0.0
       # 配置中心
       config:
         # 是否启用动态配置
