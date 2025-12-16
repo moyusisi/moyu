@@ -1,0 +1,14 @@
+# Spring Boot 2.4 版本开始，配置文件加载方式进行了重构，只会识别 application.* 配置文件，并不会自动识别bootstrap.*
+# Spring Cloud 微服务项目使用的配置文件为 bootstrap.*
+
+# 服务配置
+server:
+  # 默认端口8080, 如果无需修改默认端口，此配置可不要
+  port: 8080
+
+# spring配置
+spring:
+  application:
+    name: moyu-gateway
+  profiles:
+    active: test
