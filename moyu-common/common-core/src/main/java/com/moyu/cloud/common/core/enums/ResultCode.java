@@ -1,4 +1,4 @@
-package com.moyu.cloud.common.core.model;
+package com.moyu.cloud.common.core.enums;
 
 /**
  * 响应码接口

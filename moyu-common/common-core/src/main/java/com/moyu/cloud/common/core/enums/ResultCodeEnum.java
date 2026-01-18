@@ -1,7 +1,5 @@
 package com.moyu.cloud.common.core.enums;
 
-import com.moyu.cloud.common.core.model.ResultCode;
-
 import java.io.Serializable;
 import java.util.StringJoiner;
 
