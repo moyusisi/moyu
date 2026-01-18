@@ -1,6 +1,5 @@
 package com.moyu.cloud.common.mybatis.annotation;
 
-
 import java.lang.annotation.*;
 
 /**

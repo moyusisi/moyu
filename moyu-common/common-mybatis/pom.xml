@@ -26,11 +26,6 @@
             <artifactId>common-security</artifactId>
             <version>1.0.1-SNAPSHOT</version>
         </dependency>
-        <!-- mybatis-plus 增强CRUD 参考：https://baomidou.com/introduce/ -->
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-        </dependency>
         <!-- mybatis-plus分页插件 参考：https://baomidou.com/plugins/pagination/ -->
         <dependency>
             <groupId>com.baomidou</groupId>
