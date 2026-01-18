@@ -6,7 +6,7 @@ package com.moyu.cloud.common.core.model;
  * @author shisong
  * @since 2025-09-12
  */
-public interface IResultCode {
+public interface ResultCode {
 
     /**
      * 获取响应码

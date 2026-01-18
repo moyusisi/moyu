@@ -89,12 +89,12 @@ public class Result<T> implements Serializable {
         this.data = data;
     }
 
-    public Result(IResultCode resultCode) {
+    public Result(ResultCode resultCode) {
         this.code = resultCode.getCode();
         this.message = resultCode.getMessage();
     }
 
-    public Result(IResultCode resultCode, String detail) {
+    public Result(ResultCode resultCode, String detail) {
         this.code = resultCode.getCode();
         String message = resultCode.getMessage();
         if (detail != null && !detail.isEmpty()) {
