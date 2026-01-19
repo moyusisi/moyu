@@ -1,6 +1,6 @@
 package com.moyu.cloud.boot;
 
-import com.moyu.cloud.boot.common.core.annotation.EnableCommonLog;
+import com.moyu.cloud.common.core.annotation.EnableCommonLog;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
