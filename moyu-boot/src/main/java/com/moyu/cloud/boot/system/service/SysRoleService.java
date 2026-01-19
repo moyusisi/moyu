@@ -1,0 +1,125 @@
+package com.moyu.cloud.boot.system.service;
+
+import cn.hutool.core.lang.tree.Tree;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.moyu.boot.common.core.model.PageData;
+import com.moyu.boot.common.security.model.LoginUser;
+import com.moyu.boot.system.model.entity.SysRole;
+import com.moyu.boot.system.model.entity.SysUser;
+import com.moyu.boot.system.model.param.SysRoleParam;
+import com.moyu.boot.system.model.vo.PermScopeInfo;
+import com.moyu.boot.system.model.vo.SysRoleVO;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * 角色信息服务类Service
+ *
+ * @author shisong
+ * @since 2024-12-15 20:49:43
+ */
+public interface SysRoleService extends IService<SysRole> {
+
+    /**
+     * 所有人都拥有的默认角色，无需关联用户也拥有
+     */
+    default String defaultRole() {
+        return "r_default";
+    }
+
+    /**
+     * 获取记录列表(不分页，不限制数据权限)
+     */
+    List<SysRoleVO> list(SysRoleParam param);
+
+    /**
+     * 分页获取记录列表(角色无需限制数据权限)
+     */
+    PageData<SysRoleVO> pageList(SysRoleParam param);
+
+    /**
+     * 获取记录详情(通过主键或唯一键)
+     */
+    SysRoleVO detail(SysRoleParam param);
+
+    /**
+     * 添加记录
+     */
+    void add(SysRoleParam param);
+
+    /**
+     * 通过ids删除记录
+     */
+    void deleteByIds(SysRoleParam param);
+
+    /**
+     * 修改记录
+     */
+    void update(SysRoleParam param);
+
+    /**
+     * 获取菜单树，用于给角色授权时选择(treeNode不包含button)
+     *
+     * @param param 角色code必须传
+     */
+    List<Tree<String>> menuTreeForGrant(SysRoleParam param);
+
+    /**
+     * 获取角色已授权的接口数据权限列表
+     *
+     * @param param 角色code, module必须传
+     */
+    List<PermScopeInfo> permScopeListForGrant(SysRoleParam param);
+
+    /**
+     * 角色授权，ROLE_HAS_MENU
+     *
+     * @param param 角色code，授权module必须传
+     */
+    void grantMenu(SysRoleParam param);
+
+    /**
+     * 角色授权数据范围，ROLE_HAS_PERM
+     *
+     * @param param 角色code，授权module必须传
+     */
+    void grantScope(SysRoleParam param);
+
+    /**
+     * 角色内用户列表，仅包含 ROLE_HAS_USER 关系直接指定的用户。
+     */
+    List<SysUser> roleUserList(SysRoleParam param);
+
+    /**
+     * 用户直接关联的角色, 仅包含 ROLE_HAS_USER 关系直接指定的用户。
+     */
+    Set<String> userRoles(String username);
+
+    /**
+     * 角色新增用户，ROLE_HAS_USER
+     *
+     * @param param 角色code，用户集合 codeSet
+     */
+    void roleAddUser(SysRoleParam param);
+
+    /**
+     * 角色删除用户，ROLE_HAS_USER
+     *
+     * @param param 角色code，用户集合 codeSet
+     */
+    void roleDeleteUser(SysRoleParam param);
+
+    /**
+     * 获取指定角色的权限标识
+     */
+    Set<String> rolePerms(Set<String> roleSet);
+
+    /**
+     * 获取角色的权限标识+数据范围(数据权限自动合并)
+     *
+     * @return Map:接口perm标识 -> dataScope
+     */
+    Map<String, LoginUser.DataScopeInfo> rolePermScopeMap(Set<String> roleSet, String orgCode);
+}
