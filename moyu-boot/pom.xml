@@ -89,6 +89,11 @@
             <artifactId>joda-time</artifactId>
             <version>2.12.5</version>
         </dependency>
+        <!-- hutool 工具组件 -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-http</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

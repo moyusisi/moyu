@@ -60,5 +60,14 @@
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-alone-redis</artifactId>
         </dependency>
+        <!-- hutool 工具组件 -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-extra</artifactId>
+        </dependency>
     </dependencies>
 </project>
