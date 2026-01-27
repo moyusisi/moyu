@@ -1,4 +1,4 @@
-package com.moyu.cloud.common.web.config;
+package com.moyu.cloud.boot.system.config;
 
 
 import org.hibernate.validator.HibernateValidator;

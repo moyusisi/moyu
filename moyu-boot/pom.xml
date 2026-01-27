@@ -34,12 +34,6 @@
             <artifactId>common-mybatis</artifactId>
             <version>1.0.1-SNAPSHOT</version>
         </dependency>
-        <!-- common-web -->
-        <dependency>
-            <groupId>com.moyu.cloud</groupId>
-            <artifactId>common-web</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
-        </dependency>
 
         <!-- 开源工具 -->
         <dependency>

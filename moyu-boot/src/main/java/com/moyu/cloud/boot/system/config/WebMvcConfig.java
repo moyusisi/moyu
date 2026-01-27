@@ -1,6 +1,6 @@
 package com.moyu.cloud.boot.system.config;
 
-import com.moyu.boot.system.interceptor.VueHistoryInterceptor;
+import com.moyu.cloud.boot.system.interceptor.VueHistoryInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
