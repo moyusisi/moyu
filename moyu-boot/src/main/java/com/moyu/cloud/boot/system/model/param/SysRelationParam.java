@@ -54,7 +54,7 @@ public class SysRelationParam {
     /**
      * 关系类型(字典 1:role_has_user, 2:role_has_perm, 3:group_has_user, 4:group_has_role, 5:scope_has_user)
      *
-     * @see com.moyu.boot.system.enums.RelationTypeEnum
+     * @see com.moyu.cloud.boot.system.enums.RelationTypeEnum
      */
     private Integer relationType;
 

@@ -68,7 +68,7 @@ public class SysOrgParam extends PageParam {
     /**
      * 组织机构类型(字典 1公司组织 2部门机构 3虚拟节点)
      *
-     * @see com.moyu.boot.system.enums.OrgTypeEnum
+     * @see com.moyu.cloud.boot.system.enums.OrgTypeEnum
      */
     @NotNull(message = "组织机构类型orgType不能为空")
     @Min(value = 1, message = "组织机构类型orgType有效取值范围为[1,3]")

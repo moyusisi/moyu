@@ -72,7 +72,7 @@ public class SysResourceParam extends PageParam {
     /**
      * 资源类型（字典 1模块 2目录 3菜单 4内链 5外链 6按钮）
      *
-     * @see com.moyu.boot.system.enums.ResourceTypeEnum
+     * @see com.moyu.cloud.boot.system.enums.ResourceTypeEnum
      */
     @NotNull(message = "菜单类型resourceType不能为空")
     @Min(value = 1, message = "资源类型resourceType有效取值范围为[1,5]")

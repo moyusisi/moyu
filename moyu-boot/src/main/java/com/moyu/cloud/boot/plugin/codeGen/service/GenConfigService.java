@@ -3,11 +3,11 @@ package com.moyu.cloud.boot.plugin.codeGen.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.moyu.cloud.common.core.model.PageData;
-import com.moyu.boot.plugin.codeGen.model.entity.GenConfig;
-import com.moyu.boot.plugin.codeGen.model.param.GenConfigParam;
-import com.moyu.boot.plugin.codeGen.model.vo.CodePreviewVO;
-import com.moyu.boot.plugin.codeGen.model.vo.GenConfigInfo;
-import com.moyu.boot.plugin.codeGen.model.vo.TableMetaData;
+import com.moyu.cloud.boot.plugin.codeGen.model.entity.GenConfig;
+import com.moyu.cloud.boot.plugin.codeGen.model.param.GenConfigParam;
+import com.moyu.cloud.boot.plugin.codeGen.model.vo.CodePreviewVO;
+import com.moyu.cloud.boot.plugin.codeGen.model.vo.GenConfigInfo;
+import com.moyu.cloud.boot.plugin.codeGen.model.vo.TableMetaData;
 
 import java.util.List;
 import java.util.Set;

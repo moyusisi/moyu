@@ -1,7 +1,7 @@
 package com.moyu.cloud.boot.plugin.codeGen.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.moyu.boot.plugin.codeGen.model.entity.GenField;
+import com.moyu.cloud.boot.plugin.codeGen.model.entity.GenField;
 
 /**
 * @author shisong

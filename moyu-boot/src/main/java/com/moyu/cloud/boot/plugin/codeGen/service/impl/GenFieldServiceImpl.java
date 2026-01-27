@@ -1,9 +1,9 @@
 package com.moyu.cloud.boot.plugin.codeGen.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.moyu.boot.plugin.codeGen.mapper.GenFieldMapper;
-import com.moyu.boot.plugin.codeGen.model.entity.GenField;
-import com.moyu.boot.plugin.codeGen.service.GenFieldService;
+import com.moyu.cloud.boot.plugin.codeGen.mapper.GenFieldMapper;
+import com.moyu.cloud.boot.plugin.codeGen.model.entity.GenField;
+import com.moyu.cloud.boot.plugin.codeGen.service.GenFieldService;
 import org.springframework.stereotype.Service;
 
 /**

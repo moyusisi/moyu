@@ -46,7 +46,7 @@ public class SysResource extends BaseEntity {
     /**
      * 菜单类型（字典 1模块 2目录 3菜单 4按钮 5外链）
      *
-     * @see com.moyu.boot.system.enums.ResourceTypeEnum
+     * @see com.moyu.cloud.boot.system.enums.ResourceTypeEnum
      */
     private Integer resourceType;
 

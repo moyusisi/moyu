@@ -1,7 +1,7 @@
 package com.moyu.cloud.boot.plugin.codeGen.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.moyu.boot.plugin.codeGen.model.entity.GenField;
+import com.moyu.cloud.boot.plugin.codeGen.model.entity.GenField;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

@@ -22,7 +22,7 @@ public class Meta {
     /**
      * 标识路由的类型
      *
-     * @see com.moyu.boot.system.enums.ResourceTypeEnum#name().toLowerCase
+     * @see com.moyu.cloud.boot.system.enums.ResourceTypeEnum#name().toLowerCase
      */
     private String type;
 

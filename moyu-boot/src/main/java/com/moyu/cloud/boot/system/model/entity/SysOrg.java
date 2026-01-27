@@ -46,7 +46,7 @@ public class SysOrg extends BaseEntity {
     /**
      * 组织机构类型(字典 1公司组织 2部门机构 3虚拟节点)
      *
-     * @see com.moyu.boot.system.enums.OrgTypeEnum
+     * @see com.moyu.cloud.boot.system.enums.OrgTypeEnum
      */
     private Integer orgType;
 
