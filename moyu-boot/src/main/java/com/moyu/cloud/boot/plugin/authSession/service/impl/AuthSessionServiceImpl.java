@@ -8,7 +8,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
-import com.moyu.boot.common.core.model.PageData;
+import com.moyu.cloud.common.core.model.PageData;
 import com.moyu.boot.plugin.authSession.model.param.AuthSessionParam;
 import com.moyu.boot.plugin.authSession.model.vo.AuthSessionAnalysisVO;
 import com.moyu.boot.plugin.authSession.model.vo.AuthSessionVO;

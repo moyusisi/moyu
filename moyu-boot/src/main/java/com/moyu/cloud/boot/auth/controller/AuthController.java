@@ -1,10 +1,10 @@
 package com.moyu.cloud.boot.auth.controller;
 
-import com.moyu.boot.auth.model.param.UserLoginParam;
-import com.moyu.boot.auth.service.AuthService;
-import com.moyu.boot.common.core.annotation.Log;
-import com.moyu.boot.common.core.annotation.SysLog;
-import com.moyu.boot.common.core.model.Result;
+import com.moyu.cloud.boot.auth.model.param.UserLoginParam;
+import com.moyu.cloud.boot.auth.service.AuthService;
+import com.moyu.cloud.common.core.annotation.Log;
+import com.moyu.cloud.common.core.annotation.SysLog;
+import com.moyu.cloud.common.core.model.Result;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

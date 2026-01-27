@@ -1,8 +1,8 @@
 package com.moyu.cloud.boot.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.moyu.boot.system.model.entity.SysRelation;
-import com.moyu.boot.system.model.param.SysRelationParam;
+import com.moyu.cloud.boot.system.model.entity.SysRelation;
+import com.moyu.cloud.boot.system.model.param.SysRelationParam;
 
 import java.util.List;
 import java.util.Set;

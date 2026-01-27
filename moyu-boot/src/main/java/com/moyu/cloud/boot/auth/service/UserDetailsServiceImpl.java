@@ -2,13 +2,13 @@ package com.moyu.cloud.boot.auth.service;
 
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.moyu.boot.common.core.enums.DataScopeEnum;
-import com.moyu.boot.common.security.model.LoginUser;
-import com.moyu.boot.system.model.entity.SysUser;
-import com.moyu.boot.system.service.SysGroupService;
-import com.moyu.boot.system.service.SysRelationService;
-import com.moyu.boot.system.service.SysRoleService;
-import com.moyu.boot.system.service.SysUserService;
+import com.moyu.cloud.common.core.enums.DataScopeEnum;
+import com.moyu.cloud.common.security.model.LoginUser;
+import com.moyu.cloud.boot.system.model.entity.SysUser;
+import com.moyu.cloud.boot.system.service.SysGroupService;
+import com.moyu.cloud.boot.system.service.SysRelationService;
+import com.moyu.cloud.boot.system.service.SysRoleService;
+import com.moyu.cloud.boot.system.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

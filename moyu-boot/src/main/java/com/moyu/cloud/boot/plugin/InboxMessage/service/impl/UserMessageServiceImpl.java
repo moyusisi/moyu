@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moyu.boot.common.core.enums.ResultCodeEnum;
 import com.moyu.boot.common.core.exception.BusinessException;
-import com.moyu.boot.common.core.model.PageData;
+import com.moyu.cloud.common.core.model.PageData;
 import com.moyu.boot.plugin.InboxMessage.mapper.UserMessageMapper;
 import com.moyu.boot.plugin.InboxMessage.model.entity.UserMessage;
 import com.moyu.boot.plugin.InboxMessage.model.param.InboxMessageParam;

@@ -1,7 +1,7 @@
 package com.moyu.cloud.boot.plugin.authSession.service;
 
 
-import com.moyu.boot.common.core.model.PageData;
+import com.moyu.cloud.common.core.model.PageData;
 import com.moyu.boot.plugin.authSession.model.param.AuthSessionParam;
 import com.moyu.boot.plugin.authSession.model.vo.AuthSessionAnalysisVO;
 import com.moyu.boot.plugin.authSession.model.vo.AuthSessionVO;

@@ -3,9 +3,9 @@ package com.moyu.cloud.boot.auth.service;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.StrUtil;
-import com.moyu.boot.auth.model.param.UserLoginParam;
-import com.moyu.boot.common.security.model.LoginUser;
-import com.moyu.boot.common.security.service.TokenService;
+import com.moyu.cloud.boot.auth.model.param.UserLoginParam;
+import com.moyu.cloud.common.security.model.LoginUser;
+import com.moyu.cloud.common.security.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

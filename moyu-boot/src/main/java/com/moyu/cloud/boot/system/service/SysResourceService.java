@@ -2,9 +2,9 @@ package com.moyu.cloud.boot.system.service;
 
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.moyu.boot.common.core.model.PageData;
-import com.moyu.boot.system.model.entity.SysResource;
-import com.moyu.boot.system.model.param.SysResourceParam;
+import com.moyu.cloud.common.core.model.PageData;
+import com.moyu.cloud.boot.system.model.entity.SysResource;
+import com.moyu.cloud.boot.system.model.param.SysResourceParam;
 
 import java.util.List;
 

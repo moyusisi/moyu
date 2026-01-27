@@ -2,7 +2,7 @@ package com.moyu.cloud.boot.plugin.codeGen.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.moyu.boot.common.core.model.PageData;
+import com.moyu.cloud.common.core.model.PageData;
 import com.moyu.boot.plugin.codeGen.model.entity.GenConfig;
 import com.moyu.boot.plugin.codeGen.model.param.GenConfigParam;
 import com.moyu.boot.plugin.codeGen.model.vo.CodePreviewVO;

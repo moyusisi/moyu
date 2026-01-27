@@ -22,7 +22,7 @@ import com.google.gson.Gson;
 import com.moyu.boot.common.core.enums.DataScopeEnum;
 import com.moyu.boot.common.core.enums.ResultCodeEnum;
 import com.moyu.boot.common.core.exception.BusinessException;
-import com.moyu.boot.common.core.model.PageData;
+import com.moyu.cloud.common.core.model.PageData;
 import com.moyu.boot.common.security.util.SecurityUtils;
 import com.moyu.boot.system.constant.SysConstants;
 import com.moyu.boot.system.enums.OrgTypeEnum;

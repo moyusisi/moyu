@@ -3,7 +3,7 @@ package com.moyu.cloud.boot.system.model.param;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.moyu.boot.common.core.model.PageParam;
+import com.moyu.cloud.common.core.model.PageParam;
 import com.moyu.boot.system.model.vo.PermScopeInfo;
 import lombok.Builder;
 import lombok.Getter;

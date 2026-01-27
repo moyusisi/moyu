@@ -1,6 +1,6 @@
 package com.moyu.cloud.boot.system.controller;
 
-import com.moyu.boot.common.core.model.Result;
+import com.moyu.cloud.common.core.model.Result;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;

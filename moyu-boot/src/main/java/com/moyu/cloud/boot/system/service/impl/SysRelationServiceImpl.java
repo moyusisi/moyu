@@ -4,11 +4,11 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.moyu.boot.system.enums.RelationTypeEnum;
-import com.moyu.boot.system.mapper.SysRelationMapper;
-import com.moyu.boot.system.model.entity.SysRelation;
-import com.moyu.boot.system.model.param.SysRelationParam;
-import com.moyu.boot.system.service.SysRelationService;
+import com.moyu.cloud.boot.system.enums.RelationTypeEnum;
+import com.moyu.cloud.boot.system.mapper.SysRelationMapper;
+import com.moyu.cloud.boot.system.model.entity.SysRelation;
+import com.moyu.cloud.boot.system.model.param.SysRelationParam;
+import com.moyu.cloud.boot.system.service.SysRelationService;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;

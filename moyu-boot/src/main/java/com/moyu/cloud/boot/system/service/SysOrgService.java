@@ -2,7 +2,7 @@ package com.moyu.cloud.boot.system.service;
 
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.moyu.boot.common.core.model.PageData;
+import com.moyu.cloud.common.core.model.PageData;
 import com.moyu.boot.system.model.entity.SysOrg;
 import com.moyu.boot.system.model.param.SysOrgParam;
 

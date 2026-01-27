@@ -21,7 +21,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
 import com.moyu.boot.common.core.enums.ResultCodeEnum;
 import com.moyu.boot.common.core.exception.BusinessException;
-import com.moyu.boot.common.core.model.PageData;
+import com.moyu.cloud.common.core.model.PageData;
 import com.moyu.boot.common.core.model.BaseEntity;
 import com.moyu.boot.plugin.codeGen.config.CodegenProperties;
 import com.moyu.boot.plugin.codeGen.enums.FormTypeEnum;

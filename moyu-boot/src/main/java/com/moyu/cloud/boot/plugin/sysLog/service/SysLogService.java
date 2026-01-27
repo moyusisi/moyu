@@ -1,6 +1,6 @@
 package com.moyu.cloud.boot.plugin.sysLog.service;
 
-import com.moyu.boot.common.core.model.PageData;
+import com.moyu.cloud.common.core.model.PageData;
 import com.moyu.boot.plugin.sysLog.model.entity.SysLog;
 import com.moyu.boot.plugin.sysLog.model.param.SysLogParam;
 import com.moyu.boot.plugin.sysLog.model.vo.SysLogVO;

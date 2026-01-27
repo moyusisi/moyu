@@ -1,9 +1,9 @@
 package com.moyu.cloud.boot.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.moyu.boot.common.core.model.PageData;
-import com.moyu.boot.system.model.entity.SysUser;
-import com.moyu.boot.system.model.param.SysUserParam;
+import com.moyu.cloud.common.core.model.PageData;
+import com.moyu.cloud.boot.system.model.entity.SysUser;
+import com.moyu.cloud.boot.system.model.param.SysUserParam;
 
 import java.util.List;
 
