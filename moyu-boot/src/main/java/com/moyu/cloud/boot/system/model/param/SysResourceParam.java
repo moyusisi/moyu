@@ -121,12 +121,23 @@ public class SysResourceParam extends PageParam {
     private Integer sortNum;
 
     /**
-     * 扩展信息
-     */
-    private String extJson;
-
-    /**
      * 备注
      */
     private String remark;
+
+    //***** 扩展信息extJson的属性展开 *****
+    /**
+     * 【目录】是否简洁模式(只有一个菜单时，不显示目录直接显示该菜单)
+     */
+    private Integer brief;
+
+    /**
+     * 【菜单】是否固定显示
+     */
+    private Integer affix;
+
+    /**
+     * 【菜单】是否支持页面缓存
+     */
+    private Integer keepAlive;
 }

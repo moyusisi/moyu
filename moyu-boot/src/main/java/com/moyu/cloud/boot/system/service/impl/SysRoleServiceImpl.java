@@ -19,28 +19,29 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.moyu.cloud.boot.system.constant.SysConstants;
+import com.moyu.cloud.boot.system.enums.RelationTypeEnum;
+import com.moyu.cloud.boot.system.enums.ResourceTypeEnum;
+import com.moyu.cloud.boot.system.mapper.SysRoleMapper;
+import com.moyu.cloud.boot.system.model.entity.SysRelation;
+import com.moyu.cloud.boot.system.model.entity.SysResource;
+import com.moyu.cloud.boot.system.model.entity.SysRole;
+import com.moyu.cloud.boot.system.model.entity.ext.RelationExt;
+import com.moyu.cloud.boot.system.model.param.SysRelationParam;
+import com.moyu.cloud.boot.system.model.param.SysRoleParam;
+import com.moyu.cloud.boot.system.model.param.SysUserParam;
+import com.moyu.cloud.boot.system.model.vo.PermScopeInfo;
+import com.moyu.cloud.boot.system.model.vo.SysRoleVO;
+import com.moyu.cloud.boot.system.model.vo.SysUserVO;
+import com.moyu.cloud.boot.system.service.*;
+import com.moyu.cloud.common.authZ.model.LoginUser;
+import com.moyu.cloud.common.authZ.util.LoginUserUtils;
 import com.moyu.cloud.common.core.enums.DataScopeEnum;
 import com.moyu.cloud.common.core.enums.ResultCodeEnum;
 import com.moyu.cloud.common.core.exception.BusinessException;
 import com.moyu.cloud.common.core.model.BaseEntity;
-import com.moyu.cloud.common.authZ.constant.SecurityConstants;
-import com.moyu.cloud.common.authZ.model.LoginUser;
-import com.moyu.cloud.common.authZ.util.SecurityUtils;
-import com.moyu.cloud.boot.system.constant.SysConstants;
-import com.moyu.cloud.boot.system.enums.ResourceTypeEnum;
-import com.moyu.cloud.boot.system.mapper.SysRoleMapper;
-import com.moyu.cloud.boot.system.model.entity.SysResource;
-import com.moyu.cloud.boot.system.model.entity.SysRole;
-import com.moyu.cloud.boot.system.model.param.SysResourceParam;
-import com.moyu.cloud.boot.system.model.param.SysRoleParam;
-import com.moyu.cloud.boot.system.model.param.SysUserParam;
-import com.moyu.cloud.boot.system.model.vo.PermScopeInfo;
-import com.moyu.cloud.boot.system.service.*;
-import com.moyu.cloud.boot.system.enums.RelationTypeEnum;
-import com.moyu.cloud.boot.system.model.entity.SysRelation;
-import com.moyu.cloud.boot.system.model.entity.SysUser;
-import com.moyu.cloud.boot.system.model.param.SysRelationParam;
-import com.moyu.cloud.boot.system.model.vo.SysRoleVO;
 import com.moyu.cloud.common.core.model.PageData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -88,7 +89,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         // 指定指定状态
         queryWrapper.eq(ObjectUtil.isNotEmpty(param.getStatus()), SysRole::getStatus, param.getStatus());
         // 非 ROOT 不可见ROOT
-        queryWrapper.ne(!SecurityUtils.isRoot(), SysRole::getCode, SecurityConstants.ROOT_ROLE);
+        queryWrapper.ne(!LoginUserUtils.isRoot(), SysRole::getCode, LoginUserUtils.ROOT_ROLE);
         // 仅查询未删除的
         queryWrapper.eq(SysRole::getDeleted, 0);
         // 排序
@@ -113,7 +114,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         // 指定指定状态
         queryWrapper.eq(ObjectUtil.isNotEmpty(param.getStatus()), SysRole::getStatus, param.getStatus());
         // 非 ROOT 不可见ROOT
-        queryWrapper.ne(!SecurityUtils.isRoot(), SysRole::getCode, SecurityConstants.ROOT_ROLE);
+        queryWrapper.ne(!LoginUserUtils.isRoot(), SysRole::getCode, LoginUserUtils.ROOT_ROLE);
         // 仅查询未删除的
         queryWrapper.eq(SysRole::getDeleted, 0);
         // 排序
@@ -188,14 +189,13 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     }
 
     @Override
-    public List<Tree<String>> menuTreeForGrant(SysRoleParam roleParam) {
-        // 模块编码
-        SysResourceParam query = SysResourceParam.builder().module(roleParam.getModule()).build();
+    public List<Tree<String>> menuTreeForGrant(SysRoleParam param) {
         // 查询模块所有资源(包括菜单按钮)
-        List<SysResource> menuList = sysResourceService.list(query);
+        List<SysResource> menuList = sysResourceService.list(Wrappers.lambdaQuery(SysResource.class)
+                .eq(ObjectUtil.isNotEmpty(param.getModule()), SysResource::getModule, param.getModule()));
 
         // role已经拥有的资源权限
-        Set<String> permSet = sysRelationService.rolePerm(roleParam.getCode());
+        Set<String> permSet = sysRelationService.rolePerm(param.getCode());
 
         // 过滤出button，转为 parentCode->button 格式的的 multimap
         Multimap<String, SysResource> allButtonMap = ArrayListMultimap.create();
@@ -235,7 +235,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         nodeConfig.setIdKey("code");
         nodeConfig.setParentIdKey("parentCode");
         // 指定rootId
-        String rootId = ObjectUtil.isEmpty(roleParam.getModule()) ? SysConstants.ROOT_NODE_ID : roleParam.getModule();
+        String rootId = ObjectUtil.isEmpty(param.getModule()) ? SysConstants.ROOT_NODE_ID : param.getModule();
         // 构建树
         return TreeUtil.build(nodeList, rootId, nodeConfig, new DefaultNodeParser<>());
     }
@@ -243,14 +243,17 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     @Override
     public List<PermScopeInfo> permScopeListForGrant(SysRoleParam param) {
         List<PermScopeInfo> permScopeList = new ArrayList<>();
-        // 模块编码
-        SysResourceParam query = SysResourceParam.builder().module(param.getModule())
-                .resourceType(ResourceTypeEnum.BUTTON.getCode())
-                .visible(1) // 有数据权限的接口
-                .name(param.getName()).path(param.getSearchKey())
-                .build();
         // 查询模块所有按钮资源
-        List<SysResource> apiList = sysResourceService.list(query);
+        List<SysResource> btnList = sysResourceService.list(Wrappers.lambdaQuery(SysResource.class)
+                .eq(SysResource::getResourceType, ResourceTypeEnum.BUTTON.getCode())
+                // 有数据权限的接口
+                .eq(SysResource::getVisible, 1)
+                .eq(ObjectUtil.isNotEmpty(param.getModule()), SysResource::getModule, param.getModule())
+                // 指定name查询
+                .like(ObjectUtil.isNotEmpty(param.getName()), SysResource::getName, param.getName())
+                // 指定path查询
+                .like(ObjectUtil.isNotEmpty(param.getSearchKey()), SysResource::getPath, param.getSearchKey())
+        );
 
         // role已经拥有的资源权限 permCode -> Relation
         Map<String, SysRelation> permMap = new HashMap<>();
@@ -261,18 +264,22 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         ).forEach(e -> {
             permMap.put(e.getTargetId(), e);
         });
-        // 从apiList中找到已授权的部分
-        apiList.forEach(api -> {
-            if (permMap.containsKey(api.getCode())) {
-                SysRelation relation = permMap.get(api.getCode());
+        Gson gson = new GsonBuilder().create();
+        // 从btnList中找到已授权的部分
+        btnList.forEach(btn -> {
+            if (permMap.containsKey(btn.getCode())) {
+                SysRelation relation = permMap.get(btn.getCode());
                 PermScopeInfo vo = PermScopeInfo.builder()
-                        .code(api.getCode())
-                        .name(api.getName())
-                        .path(api.getPath())
-                        .permission(api.getPermission())
-                        .dataScope(relation.getDataScope())
-                        .scopes(relation.getScopes())
+                        .code(btn.getCode())
+                        .name(btn.getName())
+                        .path(btn.getPath())
+                        .permission(btn.getPermission())
                         .build();
+                RelationExt.ScopeExt ext = gson.fromJson(relation.getExtJson(), RelationExt.ScopeExt.class);
+                if (ext != null) {
+                    vo.setDataScope(ext.getDataScope());
+                    vo.setScopeList(ext.getScopeList());
+                }
                 permScopeList.add(vo);
             }
         });
@@ -334,6 +341,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Override
     public void grantScope(SysRoleParam param) {
+        Gson gson = new GsonBuilder().create();
         List<PermScopeInfo> permScopeList = param.getGrantScopeList();
         // 如果无数据则不授权
         if (ObjectUtil.isEmpty(permScopeList)) {
@@ -352,13 +360,19 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         Date date = new Date();
         relationList.forEach(relation -> {
             PermScopeInfo info = scopeMap.get(relation.getTargetId());
-            relation.setDataScope(info.getDataScope());
-            // 若是自定义数据范围,需要处理
-            if (ObjectUtil.equal(info.getDataScope(), DataScopeEnum.ORG_DEFINE.getCode())) {
-                Assert.notEmpty(info.getScopes(), "自定义数据范围时, scopes不能为空");
-                relation.setScopes(info.getScopes());
+            RelationExt.ScopeExt scopeExt = new RelationExt.ScopeExt();
+            if (info.getDataScope() != null) {
+                scopeExt.setDataScope(info.getDataScope());
+                // 若是自定义数据范围,需要处理
+                if (ObjectUtil.equal(info.getDataScope(), DataScopeEnum.ORG_DEFINE.getCode())) {
+                    Assert.notEmpty(info.getScopeList(), "自定义数据范围时, scopeList不能为空");
+                    scopeExt.setScopeList(info.getScopeList());
+                } else {
+                    scopeExt.setScopeList(null);
+                }
+                relation.setExtJson(gson.toJson(scopeExt));
             } else {
-                relation.setScopes("");
+                relation.setExtJson(null);
             }
             relation.setUpdateBy(null);
             relation.setUpdateTime(date);
@@ -382,13 +396,13 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         if (ObjectUtil.isEmpty(userSet)) {
             return;
         }
-        // 添加 ROLE_HAS_USER 关系
+        // 添加 USER_HAS_ROLE 关系
         List<SysRelation> addList = new ArrayList<>();
         userSet.forEach(code -> {
             SysRelation entity = new SysRelation();
-            entity.setObjectId(roleParam.getCode());
-            entity.setTargetId(code);
-            entity.setRelationType(RelationTypeEnum.ROLE_HAS_USER.getCode());
+            entity.setObjectId(code);
+            entity.setTargetId(roleParam.getCode());
+            entity.setRelationType(RelationTypeEnum.USER_HAS_ROLE.getCode());
             addList.add(entity);
         });
         sysRelationService.saveBatch(addList);
@@ -405,8 +419,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         // 要删除的ids
         Set<Long> ids = new HashSet<>();
         // 查询指定role中已存在的user，加入ids待删
-        sysRelationService.list(SysRelationParam.builder().objectId(roleParam.getCode()).targetSet(userSet)
-                .relationType(RelationTypeEnum.ROLE_HAS_USER.getCode()).build()
+        sysRelationService.list(SysRelationParam.builder().targetId(roleParam.getCode()).objectSet(userSet)
+                .relationType(RelationTypeEnum.USER_HAS_ROLE.getCode()).build()
         ).forEach(e -> ids.add(e.getId()));
         // 物理删除
         if (ObjectUtil.isNotEmpty(ids)) {
@@ -415,23 +429,23 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     }
 
     @Override
-    public List<SysUser> roleUserList(SysRoleParam roleParam) {
+    public List<SysUserVO> roleUserList(SysRoleParam param) {
         // 查询指定role的所有user
-        Set<String> userSet = sysRelationService.roleUser(roleParam.getCode());
+        Set<String> userSet = sysRelationService.roleUser(param.getCode());
         if (ObjectUtil.isEmpty(userSet)) {
             return new ArrayList<>();
         }
         // 查询用户(可指定搜索词)
-        List<SysUser> userList = sysUserService.list(SysUserParam.builder()
-                .name(roleParam.getSearchKey())
-                .orgCode(roleParam.getOrgCode())
+        List<SysUserVO> voList = sysUserService.list(SysUserParam.builder()
+                .name(param.getSearchKey())
+                .orgCode(param.getOrgCode())
                 .codeSet(userSet).build());
-        return userList;
+        return voList;
     }
 
     @Override
     public Set<String> userRoles(String username) {
-        // 用户直接拥有的角色 ROLE_HAS_USER 关系
+        // 用户直接拥有的角色 USER_HAS_ROLE 关系
         Set<String> roleSet = sysRelationService.userRole(username);
         // 添加默认角色
         roleSet.add(defaultRole());
@@ -529,32 +543,36 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     private LoginUser.DataScopeInfo buildDataScopeInfo(String orgCode, SysRelation relation) {
         LoginUser.DataScopeInfo info = new LoginUser.DataScopeInfo();
+        Gson gson = new GsonBuilder().create();
+        RelationExt.ScopeExt scopeExt = gson.fromJson(relation.getExtJson(), RelationExt.ScopeExt.class);
         // 不限制时设置值，防止null
-        info.setDataScope(relation.getDataScope() == null ? DataScopeEnum.ALL.getCode() : relation.getDataScope());
+        info.setDataScope(scopeExt == null || scopeExt.getDataScope() == null ? DataScopeEnum.ALL.getCode() : scopeExt.getDataScope());
         Set<String> scopeSet = new HashSet<>();
         info.setScopeSet(scopeSet);
-        if (DataScopeEnum.ORG.getCode().equals(info.getDataScope())) {
-            // 本机构
-            scopeSet.add(orgCode);
-        } else if (DataScopeEnum.ORG_CHILD.getCode().equals(info.getDataScope())) {
-            // 本机构及以下
-            scopeSet.add(orgCode);
-            // 从rootTree中获取所有child（有缓存时）
-//            Tree<String> orgTree = sysOrgService.singleTree().getNode(orgCode);
-//            orgTree.walk(node -> scopeSet.add(node.getId()));
-            // 从数据库中获取所有child（无缓存时）
-            List<String> childList = sysOrgService.childrenCodeList(orgCode);
-            scopeSet.addAll(childList);
-        } else if (DataScopeEnum.COMPANY.getCode().equals(info.getDataScope())) {
-            // 本公司及以下
-            String companyCode = sysOrgService.orgCompany(orgCode);
-            scopeSet.add(companyCode);
-            // 从数据库中获取所有child（无缓存时）
-            List<String> childList = sysOrgService.childrenCodeList(companyCode);
-            scopeSet.addAll(childList);
-        } else if (DataScopeEnum.ORG_DEFINE.getCode().equals(info.getDataScope())) {
-            // 自定义
-            scopeSet.addAll(SysConstants.COMMA_SPLITTER.splitToList(relation.getScopes()));
+        if (scopeExt != null && scopeExt.getDataScope() != null) {
+            if (DataScopeEnum.ORG.getCode().equals(info.getDataScope())) {
+                // 本机构
+                scopeSet.add(orgCode);
+            } else if (DataScopeEnum.ORG_CHILD.getCode().equals(info.getDataScope())) {
+                // 本机构及以下
+                scopeSet.add(orgCode);
+                // 从rootTree中获取所有child（有缓存时）
+                // Tree<String> orgTree = sysOrgService.singleTree().getNode(orgCode);
+                // orgTree.walk(node -> scopeSet.add(node.getId()));
+                // 从数据库中获取所有child（无缓存时）
+                List<String> childList = sysOrgService.childrenCodeList(orgCode);
+                scopeSet.addAll(childList);
+            } else if (DataScopeEnum.COMPANY.getCode().equals(info.getDataScope())) {
+                // 本公司及以下
+                String companyCode = sysOrgService.orgCompany(orgCode);
+                scopeSet.add(companyCode);
+                // 从数据库中获取所有child（无缓存时）
+                List<String> childList = sysOrgService.childrenCodeList(companyCode);
+                scopeSet.addAll(childList);
+            } else if (DataScopeEnum.ORG_DEFINE.getCode().equals(info.getDataScope())) {
+                // 自定义
+                scopeSet.addAll(scopeExt.getScopeList());
+            }
         }
         return info;
     }

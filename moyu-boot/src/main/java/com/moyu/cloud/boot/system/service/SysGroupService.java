@@ -2,10 +2,10 @@ package com.moyu.cloud.boot.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.moyu.cloud.boot.system.model.entity.SysGroup;
-import com.moyu.cloud.boot.system.model.entity.SysUser;
 import com.moyu.cloud.boot.system.model.param.SysGroupParam;
 import com.moyu.cloud.boot.system.model.vo.SysGroupVO;
 import com.moyu.cloud.boot.system.model.vo.SysRoleVO;
+import com.moyu.cloud.boot.system.model.vo.SysUserVO;
 import com.moyu.cloud.common.core.model.PageData;
 
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
 public interface SysGroupService extends IService<SysGroup> {
 
     /**
-     * 未分配任何分组时为默认分组，默认分组包含用户直接关联的所有角色(ROLE_HAS_USER)
+     * 未分配任何分组时为默认分组，默认分组包含用户直接关联的所有角色(USER_HAS_ROLE)
      */
     default String defaultGroup() {
         return "g_default";
@@ -65,7 +65,7 @@ public interface SysGroupService extends IService<SysGroup> {
     /**
      * group内用户列表
      */
-    List<SysUser> groupUserList(SysGroupParam param);
+    List<SysUserVO> groupUserList(SysGroupParam param);
 
     /**
      * 用户所属的group列表

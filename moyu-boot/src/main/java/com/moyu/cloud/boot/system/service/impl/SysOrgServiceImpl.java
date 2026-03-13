@@ -17,19 +17,20 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.moyu.cloud.boot.system.constant.SysConstants;
 import com.moyu.cloud.boot.system.enums.OrgTypeEnum;
 import com.moyu.cloud.boot.system.mapper.SysOrgMapper;
 import com.moyu.cloud.boot.system.model.entity.SysOrg;
 import com.moyu.cloud.boot.system.model.param.SysOrgParam;
+import com.moyu.cloud.boot.system.model.vo.SysOrgVO;
 import com.moyu.cloud.boot.system.service.SysOrgService;
+import com.moyu.cloud.common.authZ.util.LoginUserUtils;
 import com.moyu.cloud.common.core.enums.DataScopeEnum;
 import com.moyu.cloud.common.core.enums.ResultCodeEnum;
 import com.moyu.cloud.common.core.exception.BusinessException;
 import com.moyu.cloud.common.core.model.PageData;
-import com.moyu.cloud.common.authZ.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -52,14 +53,20 @@ import java.util.stream.Collectors;
 public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> implements SysOrgService {
 
     @Override
-    public List<SysOrg> list(SysOrgParam param) {
+    public List<SysOrgVO> list(SysOrgParam param) {
         String parentCode = param.getParentCode();
         // 查询条件
         LambdaQueryWrapper<SysOrg> queryWrapper = Wrappers.lambdaQuery(SysOrg.class);
-        // 指定name查询
-        queryWrapper.like(ObjectUtil.isNotEmpty(param.getName()), SysOrg::getName, param.getName());
         // 指定parentCode查询(包括本身和直接子节点)
         queryWrapper.and(ObjectUtil.isNotEmpty(parentCode), e -> e.eq(SysOrg::getCode, parentCode).or().eq(SysOrg::getParentCode, parentCode));
+        // 指定name查询
+        queryWrapper.like(ObjectUtil.isNotEmpty(param.getName()), SysOrg::getName, param.getName());
+        // 指定code查询
+        queryWrapper.eq(ObjectUtil.isNotEmpty(param.getCode()), SysOrg::getCode, param.getCode());
+        // 指定orgType查询
+        queryWrapper.eq(ObjectUtil.isNotEmpty(param.getOrgType()), SysOrg::getOrgType, param.getOrgType());
+        // 指定orgLevel查询
+        queryWrapper.eq(ObjectUtil.isNotEmpty(param.getOrgLevel()), SysOrg::getOrgLevel, param.getOrgLevel());
         // 指定status查询
         queryWrapper.eq(ObjectUtil.isNotEmpty(param.getStatus()), SysOrg::getStatus, param.getStatus());
         // 仅查询未删除的
@@ -68,21 +75,29 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         queryWrapper.orderByAsc(SysOrg::getSortNum);
         // 查询
         List<SysOrg> orgList = this.list(queryWrapper);
-        return orgList;
+        // 转换为voList
+        List<SysOrgVO> voList = buildSysOrgVOList(orgList);
+        return voList;
     }
 
     /**
      * 获取组织分页
      */
     @Override
-    public PageData<SysOrg> pageList(SysOrgParam param) {
+    public PageData<SysOrgVO> pageList(SysOrgParam param) {
         String parentCode = param.getParentCode();
         // 查询条件
         LambdaQueryWrapper<SysOrg> queryWrapper = Wrappers.lambdaQuery(SysOrg.class);
-        // 指定name查询
-        queryWrapper.like(ObjectUtil.isNotEmpty(param.getName()), SysOrg::getName, param.getName());
         // 指定parentCode查询(包括本身和直接子节点)
         queryWrapper.and(ObjectUtil.isNotEmpty(parentCode), e -> e.eq(SysOrg::getCode, parentCode).or().eq(SysOrg::getParentCode, parentCode));
+        // 指定name查询
+        queryWrapper.like(ObjectUtil.isNotEmpty(param.getName()), SysOrg::getName, param.getName());
+        // 指定code查询
+        queryWrapper.eq(ObjectUtil.isNotEmpty(param.getCode()), SysOrg::getCode, param.getCode());
+        // 指定orgType查询
+        queryWrapper.eq(ObjectUtil.isNotEmpty(param.getOrgType()), SysOrg::getOrgType, param.getOrgType());
+        // 指定orgLevel查询
+        queryWrapper.eq(ObjectUtil.isNotEmpty(param.getOrgLevel()), SysOrg::getOrgLevel, param.getOrgLevel());
         // 指定status查询
         queryWrapper.eq(ObjectUtil.isNotEmpty(param.getStatus()), SysOrg::getStatus, param.getStatus());
         // 仅查询未删除的
@@ -91,15 +106,15 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         queryWrapper.orderByAsc(SysOrg::getSortNum);
 
         // 非ROOT则限制数据权限
-        if (!SecurityUtils.isRoot()) {
+        if (!LoginUserUtils.isRoot()) {
             // 指定的列名
-            Integer dataScope = SecurityUtils.getDataScope();
-            Set<String> scopeSet = SecurityUtils.getScopes();
+            Integer dataScope = LoginUserUtils.getDataScope();
+            Set<String> scopeSet = LoginUserUtils.getScopes();
             if (DataScopeEnum.SELF.getCode().equals(dataScope)) {
-                String username = SecurityUtils.getUsername();
+                String username = LoginUserUtils.getUsername();
                 queryWrapper.eq(SysOrg::getCreateBy, username);
             } else if (DataScopeEnum.ORG.getCode().equals(dataScope)) {
-                String orgCode = SecurityUtils.getOrgCode();
+                String orgCode = LoginUserUtils.getOrgCode();
                 queryWrapper.eq(SysOrg::getCode, orgCode);
             } else if (DataScopeEnum.ORG_CHILD.getCode().equals(dataScope)) {
                 queryWrapper.in(ObjectUtil.isNotEmpty(scopeSet), SysOrg::getCode, scopeSet);
@@ -112,11 +127,12 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         // 分页查询
         Page<SysOrg> page = new Page<>(param.getPageNum(), param.getPageSize());
         Page<SysOrg> orgPage = this.page(page, queryWrapper);
-        return new PageData<>(orgPage.getTotal(), orgPage.getRecords());
+        List<SysOrgVO> voList = buildSysOrgVOList(orgPage.getRecords());
+        return new PageData<>(orgPage.getTotal(), voList);
     }
 
     @Override
-    public SysOrg detail(SysOrgParam param) {
+    public SysOrgVO detail(SysOrgParam param) {
         // 查询条件 id、code均为唯一标识
         LambdaQueryWrapper<SysOrg> queryWrapper = Wrappers.lambdaQuery(SysOrg.class);
         queryWrapper.eq(ObjectUtil.isNotEmpty(param.getId()), SysOrg::getId, param.getId());
@@ -125,7 +141,9 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         if (sysOrg == null) {
             throw new BusinessException(ResultCodeEnum.INVALID_PARAMETER_ERROR, "未查到指定数据");
         }
-        return sysOrg;
+        // 转换为vo
+        SysOrgVO vo = BeanUtil.copyProperties(sysOrg, SysOrgVO.class);
+        return vo;
     }
 
     @Override
@@ -193,17 +211,17 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     @Override
     public List<Tree<String>> tree() {
         Tree<String> rootTree = singleTree();
-        if (SecurityUtils.isRoot()) {
+        if (LoginUserUtils.isRoot()) {
             return rootTree.getChildren();
         }
         // 数据范围
-        Integer dataScope = SecurityUtils.getDataScope();
+        Integer dataScope = LoginUserUtils.getDataScope();
         // 未设置或设置为不限制时，返回全树
         if (dataScope == null || DataScopeEnum.ALL.getCode().equals(dataScope)) {
             return rootTree.getChildren();
         }
         // 其他情况都按照数据范围返回公司树
-        String orgCode = getUserCompanyCode(rootTree, SecurityUtils.getOrgCode());
+        String orgCode = getUserCompanyCode(rootTree, LoginUserUtils.getOrgCode());
         // 用户直属公司orgTree
         Tree<String> orgTree = rootTree.getNode(orgCode);
         // 用户公司树列表
@@ -212,18 +230,8 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
 
     @Override
     public Tree<String> singleTree() {
-        Gson gson = new Gson();
-        String jsonString = SaManager.getSaTokenDao().get("org:tree:singleTree");
-        Tree<String> catchedTree = gson.fromJson(jsonString, new TypeToken<Tree<String>>() {
-        }.getType());
-        if (ObjectUtil.isEmpty(catchedTree)) {
-            // 加载数据
-            catchedTree = loadRootTree();
-            jsonString = gson.toJson(catchedTree);
-            // 写入缓存，并设定存活时间 (单位: 秒)
-            SaManager.getSaTokenDao().set("org:tree:singleTree", jsonString, 60 * 10L);
-        }
-        return catchedTree;
+        // 没有把整个tree写入缓存，因为反序列化不好处理
+        return loadRootTree();
     }
 
     @Override
@@ -269,20 +277,24 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     }
 
     @Override
-    public void update(SysOrgParam orgParam) {
-        SysOrg oldOrg = this.detail(orgParam);
-        // 不使用beanCopy是为了效率
-        SysOrg updateOrg = buildSysOrg(orgParam);
-        updateOrg.setId(oldOrg.getId());
+    public void update(SysOrgParam param) {
+        // 通过主键id查询原有数据
+        SysOrg old = this.getById(param.getId());
+        if (old == null) {
+            throw new BusinessException(ResultCodeEnum.INVALID_PARAMETER_ERROR, "更新失败，未查到原数据");
+        }
+        // 属性复制
+        SysOrg toUpdate = BeanUtil.copyProperties(param, SysOrg.class);
+        toUpdate.setId(old.getId());
         // 若父节点有变化，则orgPath也要变
-        if (ObjectUtil.isEmpty(oldOrg.getOrgPath()) || ObjectUtil.notEqual(oldOrg.getParentCode(), orgParam.getParentCode())) {
+        if (ObjectUtil.isEmpty(old.getOrgPath()) || ObjectUtil.notEqual(old.getParentCode(), param.getParentCode())) {
             // 组织机构层级路径,逗号分隔,父节点在后(不包含本节点)
             Tree<String> rootTree = singleTree();
-            List<String> list = TreeUtil.getParentsId(rootTree.getNode(orgParam.getParentCode()), true);
-            updateOrg.setOrgPath(SysConstants.COMMA_JOINER.join(list));
+            List<String> list = TreeUtil.getParentsId(rootTree.getNode(param.getParentCode()), true);
+            toUpdate.setOrgPath(SysConstants.COMMA_JOINER.join(list));
             // 本节点的子节点orgPath也应该改变，待tree更新之后才可以修改 TODO
         }
-        this.updateById(updateOrg);
+        this.updateById(toUpdate);
     }
 
     /**
@@ -339,18 +351,45 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     }
 
     /**
-     * 从数据库中加载组织机构树
+     * 加载组织机构树
      */
     private Tree<String> loadRootTree() {
         // 查询所有组织结构
-        List<SysOrg> orgList = this.list(Wrappers.lambdaQuery(SysOrg.class)
-                // 查询部分字段
-                .select(SysOrg::getCode, SysOrg::getParentCode, SysOrg::getName, SysOrg::getSortNum, SysOrg::getOrgType)
-                .eq(SysOrg::getDeleted, 0)
-                .orderByAsc(SysOrg::getSortNum)
-        );
-        // 构建树
+        Gson gson = new Gson();
+        // 1. 先从缓存中load
+        String jsonString = SaManager.getSaTokenDao().get("org:tree:orgList");
+        List<SysOrg> orgList = gson.fromJson(jsonString, new TypeToken<List<SysOrg>>() {
+        }.getType());
+        // 2. 缓存无则查db并写入缓存
+        if (CollectionUtils.isEmpty(orgList)) {
+            // 查db
+            orgList = this.list(Wrappers.lambdaQuery(SysOrg.class)
+                    // 查询部分字段
+                    .select(SysOrg::getCode, SysOrg::getParentCode, SysOrg::getName, SysOrg::getSortNum, SysOrg::getOrgType)
+                    .eq(SysOrg::getDeleted, 0)
+                    .orderByAsc(SysOrg::getSortNum)
+            );
+            jsonString = gson.toJson(orgList);
+            // 写入缓存，并设定存活时间 (单位: 秒)
+            SaManager.getSaTokenDao().set("org:tree:orgList", jsonString, 60 * 10L);
+        }
+        // 3. 构建树
         return buildSingleTree(orgList, SysConstants.ROOT_NODE_ID);
+    }
+
+    /**
+     * 实体对象生成展示对象 entityList -> voList
+     */
+    private List<SysOrgVO> buildSysOrgVOList(List<SysOrg> entityList) {
+        List<SysOrgVO> voList = new ArrayList<>();
+        if (CollectionUtils.isEmpty(entityList)) {
+            return voList;
+        }
+        for (SysOrg entity : entityList) {
+            SysOrgVO vo = BeanUtil.copyProperties(entity, SysOrgVO.class);
+            voList.add(vo);
+        }
+        return voList;
     }
 }
 

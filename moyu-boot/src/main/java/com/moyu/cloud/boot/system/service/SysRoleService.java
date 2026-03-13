@@ -3,12 +3,12 @@ package com.moyu.cloud.boot.system.service;
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.moyu.cloud.boot.system.model.entity.SysRole;
-import com.moyu.cloud.boot.system.model.entity.SysUser;
 import com.moyu.cloud.boot.system.model.param.SysRoleParam;
 import com.moyu.cloud.boot.system.model.vo.PermScopeInfo;
 import com.moyu.cloud.boot.system.model.vo.SysRoleVO;
-import com.moyu.cloud.common.core.model.PageData;
+import com.moyu.cloud.boot.system.model.vo.SysUserVO;
 import com.moyu.cloud.common.authZ.model.LoginUser;
+import com.moyu.cloud.common.core.model.PageData;
 
 import java.util.List;
 import java.util.Map;
@@ -88,24 +88,24 @@ public interface SysRoleService extends IService<SysRole> {
     void grantScope(SysRoleParam param);
 
     /**
-     * 角色内用户列表，仅包含 ROLE_HAS_USER 关系直接指定的用户。
+     * 角色内用户列表，仅包含 USER_HAS_ROLE 关系直接指定的用户。
      */
-    List<SysUser> roleUserList(SysRoleParam param);
+    List<SysUserVO> roleUserList(SysRoleParam param);
 
     /**
-     * 用户直接关联的角色, 仅包含 ROLE_HAS_USER 关系直接指定的用户。
+     * 用户直接关联的角色, 仅包含 USER_HAS_ROLE 关系直接指定的用户。
      */
     Set<String> userRoles(String username);
 
     /**
-     * 角色新增用户，ROLE_HAS_USER
+     * 角色新增用户，USER_HAS_ROLE
      *
      * @param param 角色code，用户集合 codeSet
      */
     void roleAddUser(SysRoleParam param);
 
     /**
-     * 角色删除用户，ROLE_HAS_USER
+     * 角色删除用户，USER_HAS_ROLE
      *
      * @param param 角色code，用户集合 codeSet
      */

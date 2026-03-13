@@ -1,12 +1,8 @@
 package com.moyu.cloud.boot.system.model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.moyu.cloud.common.core.model.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,12 +20,11 @@ import java.util.Date;
 @TableName(value = "sys_user")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SysUser extends BaseEntity {
+
     /**
-     * 主键id
+     * 用户唯一标识
      */
-    @TableId(value = "id", type = IdType.AUTO)
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long id;
+    private String userId;
 
     /**
      * 账号

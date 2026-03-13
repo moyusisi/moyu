@@ -15,13 +15,17 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.moyu.cloud.boot.system.constant.SysConstants;
 import com.moyu.cloud.boot.system.enums.RelationTypeEnum;
 import com.moyu.cloud.boot.system.enums.ResourceTypeEnum;
 import com.moyu.cloud.boot.system.mapper.SysResourceMapper;
 import com.moyu.cloud.boot.system.model.entity.SysRelation;
 import com.moyu.cloud.boot.system.model.entity.SysResource;
+import com.moyu.cloud.boot.system.model.entity.ext.ResourceExt;
 import com.moyu.cloud.boot.system.model.param.SysResourceParam;
+import com.moyu.cloud.boot.system.model.vo.SysResourceVO;
 import com.moyu.cloud.boot.system.service.SysRelationService;
 import com.moyu.cloud.boot.system.service.SysResourceService;
 import com.moyu.cloud.common.core.enums.ResultCodeEnum;
@@ -32,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -46,22 +51,23 @@ import java.util.stream.Collectors;
 @Service
 public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysResource> implements SysResourceService {
 
+    private static final Gson gson = new GsonBuilder().create();
+
     @Resource
     private SysRelationService sysRelationService;
 
     @Override
     public List<Tree<String>> tree(SysResourceParam param) {
-        // 查询条件(可指定module、status)
-        SysResourceParam query = SysResourceParam.builder().module(param.getModule()).build();
-        // 查询所有资源
-        List<SysResource> resourceList = this.list(query);
+        // 查询所有资源(可指定module)
+        List<SysResource> resourceList = this.list(Wrappers.lambdaQuery(SysResource.class)
+                .eq(ObjectUtil.isNotEmpty(param.getModule()), SysResource::getModule, param.getModule()));
         // 构建树中包含记录的所有字段
         String rootId = ObjectUtil.isEmpty(param.getModule()) ? SysConstants.ROOT_NODE_ID : param.getModule();
         return buildTree(resourceList, rootId);
     }
 
     @Override
-    public List<SysResource> list(SysResourceParam param) {
+    public List<SysResourceVO> list(SysResourceParam param) {
         // 查询条件
         LambdaQueryWrapper<SysResource> queryWrapper = Wrappers.lambdaQuery(SysResource.class);
         // 指定模块
@@ -82,11 +88,13 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
         queryWrapper.orderByAsc(SysResource::getSortNum);
         // 查询
         List<SysResource> resourceList = this.list(queryWrapper);
-        return resourceList;
+        // 转换为voList
+        List<SysResourceVO> voList = buildSysResourceVOList(resourceList);
+        return voList;
     }
 
     @Override
-    public PageData<SysResource> pageList(SysResourceParam param) {
+    public PageData<SysResourceVO> pageList(SysResourceParam param) {
         // 查询条件
         LambdaQueryWrapper<SysResource> queryWrapper = Wrappers.lambdaQuery(SysResource.class);
         // 指定模块
@@ -105,21 +113,25 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
         queryWrapper.orderByAsc(SysResource::getSortNum);
         // 分页查询
         Page<SysResource> page = new Page<>(param.getPageNum(), param.getPageSize());
-        Page<SysResource> menuPage = this.page(page, queryWrapper);
-        return new PageData<>(menuPage.getTotal(), menuPage.getRecords());
+        Page<SysResource> resourcePage = this.page(page, queryWrapper);
+        List<SysResourceVO> voList = buildSysResourceVOList(resourcePage.getRecords());
+        return new PageData<>(resourcePage.getTotal(), voList);
     }
 
     @Override
-    public SysResource detail(SysResourceParam param) {
+    public SysResourceVO detail(SysResourceParam param) {
         // 查询条件 id、code均为唯一标识
         LambdaQueryWrapper<SysResource> queryWrapper = Wrappers.lambdaQuery(SysResource.class);
         queryWrapper.eq(ObjectUtil.isNotEmpty(param.getId()), SysResource::getId, param.getId());
         queryWrapper.eq(ObjectUtil.isNotEmpty(param.getCode()), SysResource::getCode, param.getCode());
-        SysResource sysResource = this.getOne(queryWrapper);
-        if (sysResource == null) {
+        SysResource entity = this.getOne(queryWrapper);
+        if (entity == null) {
             throw new BusinessException(ResultCodeEnum.INVALID_PARAMETER_ERROR, "未查到指定数据");
         }
-        return sysResource;
+        // 转换为vo
+        SysResourceVO vo = BeanUtil.copyProperties(entity, SysResourceVO.class);
+        fillFromExtJson(vo, entity.getExtJson());
+        return vo;
     }
 
     @Override
@@ -217,6 +229,8 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
         SysResource toUpdate = BeanUtil.copyProperties(param, SysResource.class, BaseEntity.UPDATE_TIME, BaseEntity.UPDATE_BY);
         // 其他处理
         toUpdate.setId(param.getId());
+        // extJson
+        toUpdate.setExtJson(buildExtJson(param));
         this.updateById(toUpdate);
     }
 
@@ -259,9 +273,24 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
         sysResource.setVisible(param.getVisible());
         sysResource.setModule(param.getModule());
         sysResource.setSortNum(param.getSortNum());
-        sysResource.setExtJson(param.getExtJson());
         sysResource.setRemark(param.getRemark());
+        sysResource.setExtJson(buildExtJson(param));
         return sysResource;
+    }
+
+    /**
+     * 构造Resource的extJson
+     */
+    private String buildExtJson(SysResourceParam param) {
+        if (param == null) {
+            return null;
+        }
+        ResourceExt.MetaExt extObj = new ResourceExt.MetaExt();
+        extObj.setBrief(param.getBrief());
+        extObj.setAffix(param.getAffix());
+        extObj.setKeepAlive(param.getKeepAlive());
+        // 扩展信息
+        return new Gson().toJson(extObj);
     }
 
     /**
@@ -331,6 +360,39 @@ public class SysResourceServiceImpl extends ServiceImpl<SysResourceMapper, SysRe
         sysRelationService.remove(Wrappers.lambdaQuery(SysRelation.class)
                 .eq(SysRelation::getRelationType, RelationTypeEnum.ROLE_HAS_PERM)
                 .in(SysRelation::getTargetId, codeSet));
+    }
+
+    /**
+     * 实体对象生成展示对象 entityList -> voList
+     */
+    private List<SysResourceVO> buildSysResourceVOList(List<SysResource> entityList) {
+        List<SysResourceVO> voList = new ArrayList<>();
+        if (CollectionUtils.isEmpty(entityList)) {
+            return voList;
+        }
+        for (SysResource entity : entityList) {
+            SysResourceVO vo = BeanUtil.copyProperties(entity, SysResourceVO.class);
+            ResourceExt.MetaExt ext = gson.fromJson(entity.getExtJson(), ResourceExt.MetaExt.class);
+            if (ObjectUtil.isNotEmpty(ext)) {
+                vo.setBrief(ext.getBrief());
+                vo.setAffix(ext.getAffix());
+                vo.setKeepAlive(ext.getKeepAlive());
+            }
+            voList.add(vo);
+        }
+        return voList;
+    }
+
+    /**
+     * 根据extJson填充vo对象
+     */
+    private void fillFromExtJson(SysResourceVO vo, String extJson) {
+        ResourceExt.MetaExt ext = gson.fromJson(extJson, ResourceExt.MetaExt.class);
+        if (ObjectUtil.isNotEmpty(ext)) {
+            vo.setBrief(ext.getBrief());
+            vo.setAffix(ext.getAffix());
+            vo.setKeepAlive(ext.getKeepAlive());
+        }
     }
 }
 

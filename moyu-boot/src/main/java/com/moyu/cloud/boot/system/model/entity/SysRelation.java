@@ -25,21 +25,16 @@ public class SysRelation extends BaseEntity {
     private String targetId;
 
     /**
-     * 关系类型(字典 1:role_has_user,2:role_has_perm,3:group_has_user,4:group_has_role,5:scope_has_user)
+     * 关系类型(字典 1:user_has_role, 2:role_has_perm, 3:user_has_group, 4:group_has_role, 5:scope_has_user)
      *
      * @see com.moyu.cloud.boot.system.enums.RelationTypeEnum
      */
     private Integer relationType;
 
     /**
-     * 数据范围(字典 0无限制 1本人数据 2本机构 3本机构及以下 4自定义)
+     * 扩展信息
      *
-     * @see com.moyu.cloud.common.core.enums.DataScopeEnum
+     * @see com.moyu.cloud.boot.system.model.entity.ext.RelationExt
      */
-    private Integer dataScope;
-
-    /**
-     * 自定义scope集合,逗号分隔
-     */
-    private String scopes;
+    private String extJson;
 }
