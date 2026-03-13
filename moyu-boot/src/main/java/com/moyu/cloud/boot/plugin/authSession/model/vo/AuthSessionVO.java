@@ -1,6 +1,5 @@
 package com.moyu.cloud.boot.plugin.authSession.model.vo;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
@@ -79,6 +78,11 @@ public class AuthSessionVO {
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date deadline;
+
+    /**
+     * session剩余有效期百分比
+     */
+    private Double sessionTimeoutPercent;
 
     /**
      * 令牌数量

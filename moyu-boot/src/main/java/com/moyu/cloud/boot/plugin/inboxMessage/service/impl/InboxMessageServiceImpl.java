@@ -1,4 +1,4 @@
-package com.moyu.cloud.boot.plugin.InboxMessage.service.impl;
+package com.moyu.cloud.boot.plugin.inboxMessage.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.Assert;
@@ -8,20 +8,20 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.moyu.cloud.boot.plugin.InboxMessage.mapper.InboxMessageMapper;
-import com.moyu.cloud.boot.plugin.InboxMessage.model.entity.InboxMessage;
-import com.moyu.cloud.boot.plugin.InboxMessage.model.entity.UserMessage;
-import com.moyu.cloud.boot.plugin.InboxMessage.model.param.InboxMessageParam;
-import com.moyu.cloud.boot.plugin.InboxMessage.model.vo.InboxMessageVO;
-import com.moyu.cloud.boot.plugin.InboxMessage.model.vo.UserMessageVO;
-import com.moyu.cloud.boot.plugin.InboxMessage.service.InboxMessageService;
-import com.moyu.cloud.boot.plugin.InboxMessage.service.UserMessageService;
-import com.moyu.cloud.boot.system.model.entity.SysUser;
-import com.moyu.cloud.boot.system.service.SysUserService;
+import com.moyu.boot.system.model.entity.SysUser;
+import com.moyu.boot.system.service.SysUserService;
+import com.moyu.cloud.boot.plugin.inboxMessage.mapper.InboxMessageMapper;
+import com.moyu.cloud.boot.plugin.inboxMessage.model.entity.InboxMessage;
+import com.moyu.cloud.boot.plugin.inboxMessage.model.entity.UserMessage;
+import com.moyu.cloud.boot.plugin.inboxMessage.model.param.InboxMessageParam;
+import com.moyu.cloud.boot.plugin.inboxMessage.model.vo.InboxMessageVO;
+import com.moyu.cloud.boot.plugin.inboxMessage.model.vo.UserMessageVO;
+import com.moyu.cloud.boot.plugin.inboxMessage.service.InboxMessageService;
+import com.moyu.cloud.boot.plugin.inboxMessage.service.UserMessageService;
+import com.moyu.cloud.common.authZ.util.LoginUserUtils;
 import com.moyu.cloud.common.core.enums.ResultCodeEnum;
 import com.moyu.cloud.common.core.exception.BusinessException;
 import com.moyu.cloud.common.core.model.PageData;
-import com.moyu.cloud.common.authZ.util.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -30,7 +30,6 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
-
 
 /**
  * 站内消息服务实现类
@@ -183,7 +182,7 @@ public class InboxMessageServiceImpl extends ServiceImpl<InboxMessageMapper, Inb
 
     @Override
     public InboxMessageVO read(InboxMessageParam param) {
-        String userId = SecurityUtils.getUsername();
+        String userId = LoginUserUtils.getUsername();
         Assert.notEmpty(userId, "用户ID不能为空");
         // 查询消息
         InboxMessage inboxMessage = this.getOne(Wrappers.lambdaQuery(InboxMessage.class).eq(InboxMessage::getCode, param.getCode()));
@@ -209,7 +208,7 @@ public class InboxMessageServiceImpl extends ServiceImpl<InboxMessageMapper, Inb
 
     @Override
     public Long unreadCount(InboxMessageParam param) {
-        String userId = SecurityUtils.getUsername();
+        String userId = LoginUserUtils.getUsername();
         Assert.notEmpty(userId, "用户ID不能为空");
         Long count = userMessageService.count(Wrappers.lambdaQuery(UserMessage.class)
                 .eq(UserMessage::getUserId, userId)
@@ -221,7 +220,7 @@ public class InboxMessageServiceImpl extends ServiceImpl<InboxMessageMapper, Inb
 
     @Override
     public PageData<UserMessageVO> userReadPage(InboxMessageParam param) {
-        param.setUserId(SecurityUtils.getUsername());
+        param.setUserId(LoginUserUtils.getUsername());
         Assert.notEmpty(param.getUserId(), "用户ID不能为空");
         PageData<UserMessageVO> pageData = userMessageService.pageList(param);
         if (pageData.getTotal() == 0) {

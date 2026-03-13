@@ -1,6 +1,5 @@
 package com.moyu.cloud.boot.plugin.codeGen.config;
 
-
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -25,7 +24,7 @@ public class CodegenProperties {
     private String packageName;
 
     /**
-     * 模块名，如system。最终会与包名拼接在一起，如:com.moyu.cloud.boot.system
+     * 模块名，如system。最终会与包名拼接在一起，如:com.moyu.boot.system
      */
     private String moduleName;
 

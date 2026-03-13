@@ -6,14 +6,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.moyu.cloud.common.core.enums.ResultCodeEnum;
-import com.moyu.cloud.common.core.exception.BusinessException;
-import com.moyu.cloud.common.core.model.PageData;
 import com.moyu.cloud.boot.plugin.sysLog.mapper.SysLogMapper;
 import com.moyu.cloud.boot.plugin.sysLog.model.entity.SysLog;
 import com.moyu.cloud.boot.plugin.sysLog.model.param.SysLogParam;
 import com.moyu.cloud.boot.plugin.sysLog.model.vo.SysLogVO;
 import com.moyu.cloud.boot.plugin.sysLog.service.SysLogService;
+import com.moyu.cloud.common.core.enums.ResultCodeEnum;
+import com.moyu.cloud.common.core.exception.BusinessException;
+import com.moyu.cloud.common.core.model.PageData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -40,6 +40,10 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> impleme
         LambdaQueryWrapper<SysLog> queryWrapper = Wrappers.lambdaQuery(SysLog.class);
         // 指定id查询
         queryWrapper.eq(ObjectUtil.isNotEmpty(param.getId()), SysLog::getId, param.getId());
+        // 指定logType查询
+        queryWrapper.eq(ObjectUtil.isNotEmpty(param.getLogType()), SysLog::getLogType, param.getLogType());
+        // 指定name查询
+        queryWrapper.like(ObjectUtil.isNotEmpty(param.getName()), SysLog::getName, param.getName());
         // 指定module查询
         queryWrapper.like(ObjectUtil.isNotEmpty(param.getModule()), SysLog::getModule, param.getModule());
         // 指定business查询
@@ -81,6 +85,10 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> impleme
         LambdaQueryWrapper<SysLog> queryWrapper = Wrappers.lambdaQuery(SysLog.class);
         // 指定id查询
         queryWrapper.eq(ObjectUtil.isNotEmpty(param.getId()), SysLog::getId, param.getId());
+        // 指定logType查询
+        queryWrapper.eq(ObjectUtil.isNotEmpty(param.getLogType()), SysLog::getLogType, param.getLogType());
+        // 指定name查询
+        queryWrapper.like(ObjectUtil.isNotEmpty(param.getName()), SysLog::getName, param.getName());
         // 指定module查询
         queryWrapper.like(ObjectUtil.isNotEmpty(param.getModule()), SysLog::getModule, param.getModule());
         // 指定business查询

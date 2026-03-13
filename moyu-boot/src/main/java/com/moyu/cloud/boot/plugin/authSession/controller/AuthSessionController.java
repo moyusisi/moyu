@@ -1,16 +1,16 @@
 package com.moyu.cloud.boot.plugin.authSession.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.ObjectUtil;
-import com.moyu.cloud.common.core.annotation.Log;
-import com.moyu.cloud.common.core.annotation.SysLog;
-import com.moyu.cloud.common.core.model.PageData;
-import com.moyu.cloud.common.core.model.Result;
 import com.moyu.cloud.boot.plugin.authSession.model.param.AuthSessionParam;
 import com.moyu.cloud.boot.plugin.authSession.model.vo.AuthSessionAnalysisVO;
 import com.moyu.cloud.boot.plugin.authSession.model.vo.AuthSessionVO;
 import com.moyu.cloud.boot.plugin.authSession.service.AuthSessionService;
-import org.springframework.security.access.prepost.PreAuthorize;
+import com.moyu.cloud.common.core.annotation.Log;
+import com.moyu.cloud.common.core.annotation.SysLog;
+import com.moyu.cloud.common.core.model.PageData;
+import com.moyu.cloud.common.core.model.Result;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,7 +46,7 @@ public class AuthSessionController {
      */
     @SysLog(module = "system", business = "会话管理", value = "查询会话列表", response = true)
     @Log(jsonLog = true, response = false)
-    @PreAuthorize("hasRole('ROOT') || hasAuthority('auth:session:page')")
+    @SaCheckPermission(value = "auth:session:page", orRole = "ROOT")
     @PostMapping("/page")
     public Result<PageData<AuthSessionVO>> pageList(@RequestBody AuthSessionParam param) {
         Assert.isTrue(ObjectUtil.isAllNotEmpty(param.getPageNum(), param.getPageSize()), "分页参数pageNum,pageSize都不能为空");
@@ -58,7 +58,7 @@ public class AuthSessionController {
      * 移除session(强退所有)
      */
     @SysLog(module = "system", business = "会话管理", value = "强退会话", response = true)
-    @PreAuthorize("hasRole('ROOT') || hasAuthority('auth:session:delete')")
+    @SaCheckPermission(value = "auth:session:delete", orRole = "ROOT")
     @PostMapping("/delete")
     public Result<?> delete(@RequestBody AuthSessionParam param) {
         Assert.notEmpty(param.getCodes(), "删除列表codes不能为空");
@@ -70,7 +70,7 @@ public class AuthSessionController {
      * 移除token(强退指定token)
      */
     @SysLog(module = "system", business = "会话管理", value = "强退令牌", response = true)
-    @PreAuthorize("hasRole('ROOT') || hasAuthority('auth:session:deleteToken')")
+    @SaCheckPermission(value = "auth:session:deleteToken", orRole = "ROOT")
     @PostMapping("/deleteToken")
     public Result<?> deleteToken(@RequestBody AuthSessionParam param) {
         Assert.notEmpty(param.getCodes(), "删除列表codes不能为空");

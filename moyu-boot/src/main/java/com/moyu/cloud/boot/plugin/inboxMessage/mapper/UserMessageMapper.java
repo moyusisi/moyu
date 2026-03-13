@@ -1,11 +1,11 @@
-package com.moyu.cloud.boot.plugin.InboxMessage.mapper;
+package com.moyu.cloud.boot.plugin.inboxMessage.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
+import com.moyu.cloud.boot.plugin.inboxMessage.model.entity.UserMessage;
+import com.moyu.cloud.boot.plugin.inboxMessage.model.vo.UserMessageVO;
 import com.moyu.cloud.common.mybatis.annotation.DataPermission;
-import com.moyu.cloud.boot.plugin.InboxMessage.model.entity.UserMessage;
-import com.moyu.cloud.boot.plugin.InboxMessage.model.vo.UserMessageVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;

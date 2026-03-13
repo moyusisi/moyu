@@ -1,6 +1,5 @@
 package com.moyu.cloud.boot.plugin.codeGen.mapper;
 
-
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.moyu.cloud.boot.plugin.codeGen.model.entity.GenConfig;
 import org.apache.ibatis.annotations.Mapper;
@@ -11,7 +10,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @author shisong
  * @see GenConfig
  * @since 2025-09-14
- *
  */
 @Mapper
 public interface GenConfigMapper extends BaseMapper<GenConfig> {

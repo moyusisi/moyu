@@ -1,12 +1,12 @@
-package com.moyu.cloud.boot.plugin.InboxMessage.mapper;
+package com.moyu.cloud.boot.plugin.inboxMessage.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.moyu.cloud.boot.plugin.InboxMessage.model.entity.InboxMessage;
-import com.moyu.cloud.boot.plugin.InboxMessage.model.param.InboxMessageParam;
-import com.moyu.cloud.boot.plugin.InboxMessage.model.vo.InboxMessageVO;
+import com.moyu.cloud.boot.plugin.inboxMessage.model.entity.InboxMessage;
+import com.moyu.cloud.boot.plugin.inboxMessage.model.param.InboxMessageParam;
+import com.moyu.cloud.boot.plugin.inboxMessage.model.vo.InboxMessageVO;
 import com.moyu.cloud.common.mybatis.annotation.DataPermission;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

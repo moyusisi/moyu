@@ -1,10 +1,10 @@
 package com.moyu.cloud.boot.plugin.sysLog.service;
 
-import com.moyu.cloud.common.core.model.PageData;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.moyu.cloud.boot.plugin.sysLog.model.entity.SysLog;
 import com.moyu.cloud.boot.plugin.sysLog.model.param.SysLogParam;
 import com.moyu.cloud.boot.plugin.sysLog.model.vo.SysLogVO;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.moyu.cloud.common.core.model.PageData;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public interface SysLogService extends IService<SysLog> {
     /**
      * 获取记录详情(通过主键或唯一键)
      */
-     SysLogVO detail(SysLogParam param);
+    SysLogVO detail(SysLogParam param);
 
     /**
      * 添加记录

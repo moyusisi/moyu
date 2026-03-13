@@ -1,4 +1,4 @@
-package com.moyu.cloud.boot.plugin.InboxMessage.service.impl;
+package com.moyu.cloud.boot.plugin.inboxMessage.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -6,11 +6,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.moyu.cloud.boot.plugin.InboxMessage.mapper.UserMessageMapper;
-import com.moyu.cloud.boot.plugin.InboxMessage.model.entity.UserMessage;
-import com.moyu.cloud.boot.plugin.InboxMessage.model.param.InboxMessageParam;
-import com.moyu.cloud.boot.plugin.InboxMessage.model.vo.UserMessageVO;
-import com.moyu.cloud.boot.plugin.InboxMessage.service.UserMessageService;
+import com.moyu.cloud.boot.plugin.inboxMessage.mapper.UserMessageMapper;
+import com.moyu.cloud.boot.plugin.inboxMessage.model.entity.UserMessage;
+import com.moyu.cloud.boot.plugin.inboxMessage.model.param.InboxMessageParam;
+import com.moyu.cloud.boot.plugin.inboxMessage.model.vo.UserMessageVO;
+import com.moyu.cloud.boot.plugin.inboxMessage.service.UserMessageService;
 import com.moyu.cloud.common.core.enums.ResultCodeEnum;
 import com.moyu.cloud.common.core.exception.BusinessException;
 import com.moyu.cloud.common.core.model.PageData;
@@ -21,7 +21,6 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 
 /**
  * 站内信接收服务实现类

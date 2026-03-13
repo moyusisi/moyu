@@ -1,20 +1,19 @@
 package com.moyu.cloud.boot.plugin.codeGen.controller;
 
-
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.ObjectUtil;
-import com.moyu.cloud.common.core.annotation.Log;
-import com.moyu.cloud.common.core.annotation.SysLog;
-import com.moyu.cloud.common.core.enums.ResultCodeEnum;
-import com.moyu.cloud.common.core.exception.BusinessException;
-import com.moyu.cloud.common.core.model.PageData;
-import com.moyu.cloud.common.core.model.Result;
 import com.moyu.cloud.boot.plugin.codeGen.model.entity.GenConfig;
 import com.moyu.cloud.boot.plugin.codeGen.model.param.GenConfigParam;
 import com.moyu.cloud.boot.plugin.codeGen.model.vo.CodePreviewVO;
 import com.moyu.cloud.boot.plugin.codeGen.model.vo.GenConfigInfo;
 import com.moyu.cloud.boot.plugin.codeGen.model.vo.TableMetaData;
 import com.moyu.cloud.boot.plugin.codeGen.service.GenConfigService;
+import com.moyu.cloud.common.core.annotation.Log;
+import com.moyu.cloud.common.core.annotation.SysLog;
+import com.moyu.cloud.common.core.enums.ResultCodeEnum;
+import com.moyu.cloud.common.core.exception.BusinessException;
+import com.moyu.cloud.common.core.model.PageData;
+import com.moyu.cloud.common.core.model.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -35,7 +34,7 @@ import java.util.List;
  * @author shisong
  * @since 2025-09-15
  */
-@Log(jsonLog = true)
+@Log(jsonLog = true, response = false)
 @Slf4j
 @RestController
 @RequestMapping("/api/gen/config")

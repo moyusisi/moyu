@@ -8,9 +8,9 @@ import cn.hutool.http.useragent.Browser;
 import cn.hutool.http.useragent.UserAgent;
 import cn.hutool.http.useragent.UserAgentUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.moyu.cloud.common.authZ.util.SecurityUtils;
 import com.moyu.cloud.boot.plugin.sysLog.model.entity.SysLog;
 import com.moyu.cloud.boot.plugin.sysLog.service.SysLogService;
+import com.moyu.cloud.common.authZ.util.LoginUserUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -67,7 +67,7 @@ public class SysLogAspect {
     @Around("logPointcut() && @annotation(logAnnotation)")
     public Object logHandler(ProceedingJoinPoint joinPoint, com.moyu.cloud.common.core.annotation.SysLog logAnnotation) throws Throwable {
         // 先从上下文中获取当前用户，防止被清理(可能为空)
-        String username = SecurityUtils.getUsername();
+        String username = LoginUserUtils.getUsername();
         Object result = null;
         Exception exception = null;
         long start = System.currentTimeMillis();
@@ -107,10 +107,11 @@ public class SysLogAspect {
             // business为空时，取值方法名
             operate = joinPoint.getSignature().getName();
         }
+        sysLog.setName(logAnnotation.value());
         sysLog.setModule(logAnnotation.module());
         sysLog.setBusiness(business);
         sysLog.setOperate(operate);
-        sysLog.setContent(logAnnotation.value());
+        sysLog.setContent(logAnnotation.content());
         sysLog.setLogType(logAnnotation.logType());
 
         if (request != null) {
@@ -179,6 +180,9 @@ public class SysLogAspect {
      * 判断是否应跳过(有些对象不应处理)
      */
     private boolean shouldSkip(Object obj) {
+        if (obj == null) {
+            return false;
+        }
         Class<?> clazz = obj.getClass();
         if (clazz.isArray()) {
             // 是否有继承关系
