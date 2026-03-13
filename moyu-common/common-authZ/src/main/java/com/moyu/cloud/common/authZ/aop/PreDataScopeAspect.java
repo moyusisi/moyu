@@ -1,7 +1,7 @@
 package com.moyu.cloud.common.authZ.aop;
 
 import com.moyu.cloud.common.authZ.model.LoginUser;
-import com.moyu.cloud.common.authZ.util.SecurityUtils;
+import com.moyu.cloud.common.authZ.util.LoginUserUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -38,7 +38,7 @@ public class PreDataScopeAspect {
     public void logHandler(com.moyu.cloud.common.core.annotation.PreDataScope annotation) {
         // 先从上下文中获取当前用户
         // 当前登陆用户
-        Optional<LoginUser> optUser = SecurityUtils.getLoginUser();
+        Optional<LoginUser> optUser = LoginUserUtils.getLoginUser();
         if (optUser.isPresent()) {
             LoginUser loginUser = optUser.get();
             // 获取权限标识

@@ -6,8 +6,6 @@ import com.moyu.cloud.common.authZ.model.LoginUser;
 import com.moyu.cloud.common.authZ.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,7 +16,7 @@ import org.springframework.stereotype.Service;
  */
 @Slf4j
 @Service
-@ConditionalOnProperty(value = "custom.security.session.type", havingValue = "redis")
+@ConditionalOnProperty(value = "custom.security.session.type", havingValue = "redis", matchIfMissing = true)
 public class RedisTokenServiceImpl implements TokenService {
 
     @Override
@@ -32,25 +30,15 @@ public class RedisTokenServiceImpl implements TokenService {
         StpUtil.getSession().set("name", loginUser.getName());
         // 将登录用户信息缓存到Token-Session中
         StpUtil.getTokenSession().set("loginUser", loginUser);
-        return StpUtil.getTokenValue();
+        return StpUtil.getTokenInfo().getTokenValue();
     }
 
     @Override
-    public String refreshToken(LoginUser loginUser) {
-        // 当前token置为失效
-        invalidateToken(StpUtil.getTokenValue());
-        // 返回新生成的token
-        return generateToken(loginUser);
-    }
-
-    @Override
-    public Authentication parseToken() {
-        // 从会话中获取缓存的数据
-        LoginUser loginUser = (LoginUser) StpUtil.getTokenSession().get("loginUser");
-        // 初始化authorities后才可使用springSecurity鉴权
-        loginUser.initAuthorities();
-        // 根据登录用户信息生成认证信息
-        return new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
+    public void switchUser(LoginUser loginUser) {
+        // 账户相关的信息缓存到Account-Session中
+        StpUtil.getSession().set("name", loginUser.getName());
+        // 将登录用户信息缓存到Token-Session中
+        StpUtil.getTokenSession().set("loginUser", loginUser);
     }
 
     @Override

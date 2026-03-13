@@ -1,7 +1,7 @@
 package com.moyu.cloud.common.authZ.service.impl;
 
 import cn.dev33.satoken.stp.StpInterface;
-import com.moyu.cloud.common.authZ.util.SecurityUtils;
+import com.moyu.cloud.common.authZ.util.LoginUserUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * Sa-Token 的权限加载接口实现类，每次调用鉴权代码时才会执行
+ * 保证此类被 SpringBoot 扫描
  *
  * @author shisong
  * @since 2025-11-11
@@ -21,7 +22,7 @@ public class StpInterfaceImpl implements StpInterface {
      */
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
-        return new ArrayList<>(SecurityUtils.getPerms());
+        return new ArrayList<>(LoginUserUtils.getPerms());
     }
 
     /**
@@ -29,6 +30,6 @@ public class StpInterfaceImpl implements StpInterface {
      */
     @Override
     public List<String> getRoleList(Object loginId, String loginType) {
-        return new ArrayList<>(SecurityUtils.getRoles());
+        return new ArrayList<>(LoginUserUtils.getRoles());
     }
 }

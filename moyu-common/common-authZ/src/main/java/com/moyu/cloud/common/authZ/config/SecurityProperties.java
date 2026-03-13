@@ -11,10 +11,11 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * 自定义认证鉴权相关配置
+ *
  * @author shisong
  * @since 2025-01-24
  */
-
 @Getter
 @Setter
 @Configuration
@@ -22,7 +23,7 @@ import java.util.List;
 public class SecurityProperties {
 
     /**
-     * 是否启用鉴权功能(false等同于全加白)
+     * 是否启用登录鉴权功能(false等同于全加白)
      */
     private Boolean enabled = Boolean.TRUE;
 
@@ -42,6 +43,16 @@ public class SecurityProperties {
     private List<String> ignoreList = new ArrayList<>();
 
     /**
+     * 密码加密方式
+     */
+    private String cryptoType = "sm4";
+
+    /**
+     * sm4自定义密钥
+     */
+    private String sm4Key = "KeyMustBe16Size.";
+
+    /**
      * 会话配置
      */
     private SessionConfig session;
@@ -53,7 +64,7 @@ public class SecurityProperties {
     public static class SessionConfig {
         /**
          * 认证策略类型
-         * * jwt   : 基于JWT的无状态认证
+         * * jwt   : 基于JWT的认证
          * * redis : 基于Redis的有状态认证
          */
         private String type = "redis";

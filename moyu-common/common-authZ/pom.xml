@@ -25,10 +25,9 @@
             <artifactId>common-core</artifactId>
             <version>1.0.1-SNAPSHOT</version>
         </dependency>
-        <!-- spring-security  -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
         </dependency>
         <!-- Sa-Token 权限认证，在线文档：https://sa-token.cc -->
         <dependency>

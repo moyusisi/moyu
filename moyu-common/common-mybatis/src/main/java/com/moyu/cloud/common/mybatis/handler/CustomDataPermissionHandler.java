@@ -5,9 +5,9 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.extension.plugins.handler.MultiDataPermissionHandler;
+import com.moyu.cloud.common.authZ.util.LoginUserUtils;
 import com.moyu.cloud.common.core.enums.DataScopeEnum;
 import com.moyu.cloud.common.mybatis.annotation.DataPermission;
-import com.moyu.cloud.common.authZ.util.SecurityUtils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.Expression;
@@ -53,7 +53,7 @@ public class CustomDataPermissionHandler implements MultiDataPermissionHandler {
             return null;
         }
         // root超管不做任何限制
-        if (SecurityUtils.isRoot()) {
+        if (LoginUserUtils.isRoot()) {
             return null;
         }
         log.debug("{} 执行数据权限过滤", mappedStatementId);
@@ -70,9 +70,9 @@ public class CustomDataPermissionHandler implements MultiDataPermissionHandler {
     public static Expression dataScopeFilter(DataPermission annotation) {
         // 指定的列名
         String orgColumn = annotation.orgColumn();
-        Integer dataScope = SecurityUtils.getDataScope();
+        Integer dataScope = LoginUserUtils.getDataScope();
         DataScopeEnum scopeEnum = DataScopeEnum.getByCode(dataScope);
-        Set<String> scopeSet = SecurityUtils.getScopes();
+        Set<String> scopeSet = LoginUserUtils.getScopes();
         // 要追加的条件
         String sqlStr = "";
         switch (scopeEnum) {
@@ -82,13 +82,13 @@ public class CustomDataPermissionHandler implements MultiDataPermissionHandler {
             }
             case SELF: {
                 // 仅自己
-                String username = SecurityUtils.getUsername();
+                String username = LoginUserUtils.getUsername();
                 sqlStr = annotation.userColumn() + " = '" + username + "'";
                 break;
             }
             case ORG: {
                 // 本机构
-                String orgCode = SecurityUtils.getOrgCode();
+                String orgCode = LoginUserUtils.getOrgCode();
                 sqlStr = orgColumn + " = '" + orgCode + "'";
                 break;
             }

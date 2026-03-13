@@ -1,7 +1,6 @@
 package com.moyu.cloud.common.authZ.service;
 
 import com.moyu.cloud.common.authZ.model.LoginUser;
-import org.springframework.security.core.Authentication;
 
 /**
  * 令牌服务，有多种实现
@@ -26,14 +25,9 @@ public interface TokenService {
     String generateToken(LoginUser loginUser);
 
     /**
-     * 更新token(原有的置为失效，然后新生成)
+     * token不变，更换loginUser TODO
      */
-    String refreshToken(LoginUser loginUser);
-
-    /**
-     * 解析 Token 获取认证信息(Spring Security 的核心组件)
-     */
-    Authentication parseToken();
+    void switchUser(LoginUser loginUser);
 
     /**
      * 置 Token 失效
