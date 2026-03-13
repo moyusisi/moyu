@@ -6,7 +6,7 @@ import cn.hutool.core.lang.tree.Tree;
 import com.moyu.cloud.common.core.annotation.Log;
 import com.moyu.cloud.common.core.annotation.SysLog;
 import com.moyu.cloud.common.core.model.Result;
-import com.moyu.cloud.common.security.util.SecurityUtils;
+import com.moyu.cloud.common.authZ.util.SecurityUtils;
 import com.moyu.cloud.boot.system.model.param.SysGroupParam;
 import com.moyu.cloud.boot.system.model.param.SysRoleParam;
 import com.moyu.cloud.boot.system.model.vo.SysRoleVO;

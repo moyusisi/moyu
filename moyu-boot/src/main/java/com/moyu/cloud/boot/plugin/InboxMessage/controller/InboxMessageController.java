@@ -10,7 +10,7 @@ import com.moyu.cloud.boot.plugin.InboxMessage.service.InboxMessageService;
 import com.moyu.cloud.common.core.annotation.Log;
 import com.moyu.cloud.common.core.model.PageData;
 import com.moyu.cloud.common.core.model.Result;
-import com.moyu.cloud.common.security.util.SecurityUtils;
+import com.moyu.cloud.common.authZ.util.SecurityUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

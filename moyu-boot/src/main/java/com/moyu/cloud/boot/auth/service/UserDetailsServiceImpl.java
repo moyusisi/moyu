@@ -3,7 +3,7 @@ package com.moyu.cloud.boot.auth.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.moyu.cloud.common.core.enums.DataScopeEnum;
-import com.moyu.cloud.common.security.model.LoginUser;
+import com.moyu.cloud.common.authZ.model.LoginUser;
 import com.moyu.cloud.boot.system.model.entity.SysUser;
 import com.moyu.cloud.boot.system.service.SysGroupService;
 import com.moyu.cloud.boot.system.service.SysRelationService;

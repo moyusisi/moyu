@@ -30,7 +30,7 @@ import com.moyu.cloud.common.core.enums.ResultCodeEnum;
 import com.moyu.cloud.common.core.exception.BusinessException;
 import com.moyu.cloud.common.core.model.BaseEntity;
 import com.moyu.cloud.common.core.model.PageData;
-import com.moyu.cloud.common.security.util.SecurityUtils;
+import com.moyu.cloud.common.authZ.util.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;

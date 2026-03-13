@@ -8,7 +8,7 @@ import com.moyu.cloud.boot.system.model.param.SysRoleParam;
 import com.moyu.cloud.boot.system.model.vo.PermScopeInfo;
 import com.moyu.cloud.boot.system.model.vo.SysRoleVO;
 import com.moyu.cloud.common.core.model.PageData;
-import com.moyu.cloud.common.security.model.LoginUser;
+import com.moyu.cloud.common.authZ.model.LoginUser;
 
 import java.util.List;
 import java.util.Map;

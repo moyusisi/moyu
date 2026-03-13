@@ -23,7 +23,7 @@
         <!-- common-security -->
         <dependency>
             <groupId>com.moyu.cloud</groupId>
-            <artifactId>common-security</artifactId>
+            <artifactId>common-authZ</artifactId>
             <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <!-- mybatis-plus分页插件 参考：https://baomidou.com/plugins/pagination/ -->
