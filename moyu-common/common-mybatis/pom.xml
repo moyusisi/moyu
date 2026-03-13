@@ -20,7 +20,7 @@
     <!--  common包中务必尽量减少jar包依赖  -->
     <dependencies>
         <!-- 本工程的其它模块 -->
-        <!-- common-security -->
+        <!-- common-authZ -->
         <dependency>
             <groupId>com.moyu.cloud</groupId>
             <artifactId>common-authZ</artifactId>

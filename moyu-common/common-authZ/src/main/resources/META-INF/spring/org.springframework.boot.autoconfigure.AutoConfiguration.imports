@@ -1,4 +1,4 @@
-com.moyu.cloud.common.authZ.config.SecurityProperties
+com.moyu.cloud.common.authZ.config.AuthProperties
 com.moyu.cloud.common.authZ.config.SaTokenConfigure
 com.moyu.cloud.common.authZ.aop.PreDataScopeAspect
 com.moyu.cloud.common.authZ.service.impl.RedisTokenServiceImpl

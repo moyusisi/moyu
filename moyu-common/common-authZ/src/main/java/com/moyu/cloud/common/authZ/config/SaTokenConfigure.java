@@ -38,7 +38,7 @@ import java.util.List;
 public class SaTokenConfigure {
 
     @Resource
-    private SecurityProperties properties;
+    private AuthProperties properties;
 
     // Sa-Token 参数配置，此配置会与配置文件中的配置合并(代码配置优先) 参考文档：https://sa-token.cc/doc.html#/use/config
     @Resource
@@ -67,7 +67,7 @@ public class SaTokenConfigure {
 
     // Sa-Token 整合 jwt https://sa-token.cc/doc.html#/plugin/jwt-extend
     @Bean
-    @ConditionalOnProperty(value = "custom.security.session.type", havingValue = "jwt")
+    @ConditionalOnProperty(value = "custom.auth.session.type", havingValue = "jwt")
     public StpLogic getStpLogicJwt() {
         // 仅Token风格替换，仍然需要Redis
         return new StpLogicJwtForSimple();

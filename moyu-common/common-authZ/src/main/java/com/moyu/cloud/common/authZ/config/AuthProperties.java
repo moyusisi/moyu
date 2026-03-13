@@ -19,8 +19,8 @@ import java.util.List;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "custom.security")
-public class SecurityProperties {
+@ConfigurationProperties(prefix = "custom.auth")
+public class AuthProperties {
 
     /**
      * 是否启用登录鉴权功能(false等同于全加白)
@@ -33,14 +33,9 @@ public class SecurityProperties {
     private List<String> authList = Arrays.asList("/api/**");
 
     /**
-     * 白名单，Security AuthorizationFilter 过滤器直接放行的路径
+     * 白名单，认证鉴权过滤器直接放行的路径
      */
     private List<String> whiteList = new ArrayList<>();
-
-    /**
-     * 忽略列表，不经过Security的任何过滤器(如静态资源)
-     */
-    private List<String> ignoreList = new ArrayList<>();
 
     /**
      * 密码加密方式
