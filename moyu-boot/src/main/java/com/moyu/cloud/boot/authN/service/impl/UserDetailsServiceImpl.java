@@ -1,18 +1,16 @@
-package com.moyu.cloud.boot.auth.service;
-
+package com.moyu.cloud.boot.authN.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.moyu.cloud.common.core.enums.DataScopeEnum;
-import com.moyu.cloud.common.authZ.model.LoginUser;
+import com.moyu.cloud.boot.authN.service.UserDetailsService;
 import com.moyu.cloud.boot.system.model.entity.SysUser;
 import com.moyu.cloud.boot.system.service.SysGroupService;
-import com.moyu.cloud.boot.system.service.SysRelationService;
 import com.moyu.cloud.boot.system.service.SysRoleService;
 import com.moyu.cloud.boot.system.service.SysUserService;
+import com.moyu.cloud.common.authZ.model.LoginUser;
+import com.moyu.cloud.common.core.enums.DataScopeEnum;
+import com.moyu.cloud.common.core.enums.ResultCodeEnum;
+import com.moyu.cloud.common.core.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -20,7 +18,6 @@ import java.util.Set;
 
 /**
  * 用户信息加载服务的自定义实现类
- * Spring Security权限认证时(AuthenticationProvider.authenticate)会调用UserDetailsService.loadUserByUsername
  *
  * @author shisong
  * @since 2024-12-27
@@ -38,38 +35,35 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Resource
     private SysGroupService sysGroupService;
 
-    @Resource
-    private SysRelationService sysRelationService;
-
     /**
-     * SpringSecurity权限认证时(AuthenticationProvider#authenticate)会调用此方法
+     * 通过username加载登录用户信息
      */
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public SysUser loadUserByUsername(String username) {
         log.info("加载{}的用户信息", username);
         // 如果auth与user属于不同的服务，则这里应该通过远程调用获取用户信息
         SysUser sysUser = sysUserService.getOne(Wrappers.lambdaQuery(SysUser.class).eq(SysUser::getAccount, username));
         if (sysUser == null) {
             log.info("登录用户:{}不存在", username);
-            throw new UsernameNotFoundException("用户账号不存在");
+            throw new BusinessException(ResultCodeEnum.USER_ACCOUNT_NOT_EXIST);
         }
         // 创建 UserDetails
-        return buildUserDetails(sysUser);
+        return sysUser;
     }
 
     /**
-     * 创建LoginUserDetails
+     * 创建LoginUser
      */
-    private LoginUser buildUserDetails(SysUser sysUser) {
-        // 用户直接拥有的角色 ROLE_HAS_USER 关系
+    @Override
+    public LoginUser buildUserDetails(SysUser sysUser) {
+        // 用户直接拥有的角色 USER_HAS_ROLE 关系
         Set<String> roleSet = sysRoleService.userRoles(sysUser.getAccount());
         // 组装LoginUser
         LoginUser loginUser = LoginUser.builder()
+                .userId(sysUser.getUserId())
                 .username(sysUser.getAccount())
                 .name(sysUser.getName())
                 .orgCode(sysUser.getOrgCode())
-                .password(sysUser.getPassword())
-                .enabled(sysUser.getStatus() == 0)
                 // 角色集合(默认角色+直接拥有的角色)
                 .roles(roleSet)
                 // 权限标识集合(仅接口,无菜单)
@@ -81,8 +75,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 // 默认岗位
                 .groupCode(sysGroupService.defaultGroup())
                 .build();
-        // 初始化权限
-        loginUser.initAuthorities();
         return loginUser;
     }
 }

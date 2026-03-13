@@ -1,7 +1,8 @@
-package com.moyu.cloud.boot.auth.controller;
+package com.moyu.cloud.boot.authN.controller;
 
-import com.moyu.cloud.boot.auth.model.param.UserLoginParam;
-import com.moyu.cloud.boot.auth.service.AuthService;
+
+import com.moyu.cloud.boot.authN.model.param.UserLoginParam;
+import com.moyu.cloud.boot.authN.service.AuthService;
 import com.moyu.cloud.common.core.annotation.Log;
 import com.moyu.cloud.common.core.annotation.SysLog;
 import com.moyu.cloud.common.core.model.Result;
@@ -29,7 +30,7 @@ public class AuthController {
     /**
      * 用户登陆
      */
-    @SysLog(module = "auth", logType = 2, value = "用户登录")
+    @SysLog(module = "auth", logType = 1, value = "用户登录")
     @PostMapping("/login")
     public Result<String> userLogin(@Validated UserLoginParam loginParam) {
         String token = authService.login(loginParam);
@@ -37,9 +38,9 @@ public class AuthController {
     }
 
     /**
-     * 用户注销登陆(若不自定义，则需要在springSecurity中配置)
+     * 用户注销登陆
      */
-    @SysLog(module = "auth", logType = 2, value = "退出登录")
+    @SysLog(module = "auth", logType = 1, value = "用户登出")
     @PostMapping("/logout")
     public Result<?> userLogout(UserLoginParam loginParam) {
         authService.logout();

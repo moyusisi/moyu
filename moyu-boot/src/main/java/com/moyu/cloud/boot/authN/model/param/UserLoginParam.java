@@ -1,4 +1,4 @@
-package com.moyu.cloud.boot.auth.model.param;
+package com.moyu.cloud.boot.authN.model.param;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -35,4 +35,8 @@ public class UserLoginParam {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+    /**
+     * 设备
+     */
+    private String device;
 }
