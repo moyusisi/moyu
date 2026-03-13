@@ -35,4 +35,7 @@ mybatis-plus:
   # 配置mapper的扫描，如果在 Mapper 中有自定义方法，需要配置此项。 默认值：["classpath*:/mapper/**/*.xml"]
   mapper-locations: classpath*:mapper/**/*.xml
   # 加载全局的配置文件
-#  config-location: classpath:mybatis-config.xml
+  #  config-location: classpath:mybatis-config.xml
+  global-config:
+    # 关闭控制台输出banner
+    banner: false
