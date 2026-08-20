@@ -7,6 +7,9 @@
 
 ### 依赖
 本模块需要如下依赖
+* 日志输出json格式需要jackson组件(包含在spring-web中)
+* 定义了基础实体对象，需要mybatis-plus组件
+* 使用了切面拦截，需要spring-aop
 
 ```xml
     <dependencies>
@@ -15,10 +18,9 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <!-- jackson序列化 -->
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
         <!-- mybatis-plus 增强CRUD 参考：https://baomidou.com/introduce/ -->
         <dependency>

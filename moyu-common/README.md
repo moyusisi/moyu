@@ -6,6 +6,6 @@ moyu-cloud的通用包，内含多个不同的通用功能模块
 ```bash
 # 仅安装父pom
 ./mvnw clean install -N
-# 安装制定模块
+# 安装指定模块
 ./mvnw clean install -pl common-core
 ```
