@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.moyu.boot.system.model.entity.SysUser;
+import com.moyu.boot.system.service.SysUserService;
 import com.moyu.cloud.boot.plugin.inboxMessage.mapper.InboxMessageMapper;
 import com.moyu.cloud.boot.plugin.inboxMessage.model.entity.InboxMessage;
 import com.moyu.cloud.boot.plugin.inboxMessage.model.entity.UserMessage;
@@ -16,8 +18,6 @@ import com.moyu.cloud.boot.plugin.inboxMessage.model.vo.InboxMessageVO;
 import com.moyu.cloud.boot.plugin.inboxMessage.model.vo.UserMessageVO;
 import com.moyu.cloud.boot.plugin.inboxMessage.service.InboxMessageService;
 import com.moyu.cloud.boot.plugin.inboxMessage.service.UserMessageService;
-import com.moyu.cloud.boot.system.model.entity.SysUser;
-import com.moyu.cloud.boot.system.service.SysUserService;
 import com.moyu.cloud.common.authZ.util.LoginUserUtils;
 import com.moyu.cloud.common.core.enums.ResultCodeEnum;
 import com.moyu.cloud.common.core.exception.BusinessException;
@@ -124,6 +124,7 @@ public class InboxMessageServiceImpl extends ServiceImpl<InboxMessageMapper, Inb
         InboxMessage inboxMessage = BeanUtil.copyProperties(param, InboxMessage.class);
         inboxMessage.setCode("MSG" + IdUtil.getSnowflakeNextId());
         inboxMessage.setSendTime(new Date());
+        inboxMessage.setSendBy(LoginUserUtils.getUsername());
         // 其他处理
         inboxMessage.setId(null);
         List<String> userList = param.getReceiveUserList();
