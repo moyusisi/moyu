@@ -1,4 +1,6 @@
 ## 认证服务
+
+authN = Authentication 身份认证  
 进行登陆认证，颁发令牌，维护用户缓存
 
 ### 功能列表
@@ -6,7 +8,9 @@
 * 登录认证，颁发令牌
 * 登录后用户信息、角色权限信息缓存
 * 对接第三方认证服务(SSO、OAuth) TODO
+* 提供`/api/auth/login`、`/api/auth/logout`入口
 
 ### 说明
+
 通过Sa-Token颁发令牌
 

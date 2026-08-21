@@ -5,7 +5,6 @@ import com.moyu.cloud.common.authZ.model.LoginUser;
 
 /**
  * 用户信息服务类
- * 原本是SpringSecurity中的接口，对其改造
  *
  * @author shisong
  * @since 2026-03-09

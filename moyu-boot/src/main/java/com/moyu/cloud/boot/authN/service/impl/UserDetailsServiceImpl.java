@@ -18,6 +18,7 @@ import java.util.Set;
 
 /**
  * 用户信息加载服务的自定义实现类
+ * Spring Security权限认证时(AuthenticationProvider.authenticate)会调用UserDetailsService.loadUserByUsername
  *
  * @author shisong
  * @since 2024-12-27
@@ -54,7 +55,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     /**
      * 创建LoginUser
      */
-    @Override
     public LoginUser buildUserDetails(SysUser sysUser) {
         // 用户直接拥有的角色 USER_HAS_ROLE 关系
         Set<String> roleSet = sysRoleService.userRoles(sysUser.getAccount());
@@ -69,8 +69,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 // 权限标识集合(仅接口,无菜单)
                 .perms(sysRoleService.rolePerms(roleSet))
                 // 接口权限的数据范围
-                .permScopeMap(sysRoleService.rolePermScopeMap(roleSet, sysUser.getOrgCode()))
-                // 数据范围默认本人数据，真正的数据范围在PreDataScope切面中赋值
+                .dataScopeMap(sysRoleService.roleDataScopeMap(roleSet, sysUser.getOrgCode()))
+                // 不设置数据范围时，默认本人数据，真正的数据范围在认证后处理
                 .dataScope(DataScopeEnum.SELF.getCode())
                 // 默认岗位
                 .groupCode(sysGroupService.defaultGroup())

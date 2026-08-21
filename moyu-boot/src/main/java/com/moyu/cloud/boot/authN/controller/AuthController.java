@@ -1,6 +1,5 @@
 package com.moyu.cloud.boot.authN.controller;
 
-
 import com.moyu.cloud.boot.authN.model.param.UserLoginParam;
 import com.moyu.cloud.boot.authN.service.AuthService;
 import com.moyu.cloud.common.core.annotation.Log;

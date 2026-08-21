@@ -24,7 +24,7 @@ public class CodegenProperties {
     private String packageName;
 
     /**
-     * 模块名，如system。最终会与包名拼接在一起，如:com.moyu.boot.system
+     * 模块名，如system。最终会与包名拼接在一起，如:com.moyu.cloud.boot.system
      */
     private String moduleName;
 

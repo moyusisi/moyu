@@ -6,8 +6,8 @@ import com.moyu.cloud.boot.authN.model.param.UserLoginParam;
 import com.moyu.cloud.boot.authN.service.AuthService;
 import com.moyu.cloud.boot.authN.service.UserDetailsService;
 import com.moyu.cloud.boot.system.model.entity.SysUser;
+import com.moyu.cloud.boot.system.service.PasswordEncoder;
 import com.moyu.cloud.common.authZ.model.LoginUser;
-import com.moyu.cloud.common.authZ.service.PasswordEncoder;
 import com.moyu.cloud.common.authZ.service.TokenService;
 import com.moyu.cloud.common.core.enums.ResultCodeEnum;
 import com.moyu.cloud.common.core.exception.BusinessException;
@@ -45,12 +45,12 @@ public class AuthServiceImpl implements AuthService {
         // 登录参数
         String username = param.getAccount();
         String password = param.getPassword();
-        // 检查封禁
+        // 检查封禁(checkDisable会抛出DisableServiceException)
         if (StpUtil.isDisable(username)) {
             // 账户被冻结(临时冻结)
             throw new BusinessException(ResultCodeEnum.USER_ACCOUNT_FROZEN);
         }
-        // 通过account获取用户
+        // 普通方式认证 通过account获取用户
         SysUser sysUser = userDetailsService.loadUserByUsername(username);
         // 检查状态
         if (sysUser.getStatus() != 0) {
