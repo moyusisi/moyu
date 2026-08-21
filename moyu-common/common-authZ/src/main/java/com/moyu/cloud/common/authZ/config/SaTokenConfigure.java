@@ -106,7 +106,6 @@ public class SaTokenConfigure {
                         storage.set(AuthConstants.LOGIN_USER, loginUser);
                     }
                 })
-
                 // 异常处理函数：过滤器中抛出的异常无法进入全局@ExceptionHandler
                 .setError(e -> {
                     log.info("===== 进入Filter层异常处理 =====");
