@@ -26,7 +26,7 @@ spring:
   datasource:
     url: jdbc:mysql://127.0.0.1/moyu?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: shisong
-    password: shisong
+    password: ENC(NaqrHWRoyjVZBM327RZnh2yOWJzToBRlscchwHlm9fWthWM3TJOeqKASs49SoiMt)
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
   # 业务redis配置
@@ -51,6 +51,11 @@ spring:
         max-idle: 8
         # 连接池中的最小空闲连接
         min-idle: 2
+
+# 加密配置
+jasypt:
+  encryptor:
+    password: shisong
 
 # Sa-Token 配置
 sa-token:
@@ -94,13 +99,14 @@ sa-token:
 custom:
   # 自定义认证鉴权配置
   auth:
-    # 是否启用认证，为false时等同于全加白
+    # 是否启用鉴权，为false时等同于全加白
     enabled: true
-    # 会话配置
-    session:
-      # 认证策略类型 jwt redis
-      type: redis
-    # 白名单列表，仅跳过 AuthorizationFilter 过滤器，还是会走其他过滤器(CSRF、CORS等)
+    # 令牌类型，默认redis 支持: jwt | redis
+    token-type: redis
+    # 需要进行认证的列表
+    auth-list:
+      - /api/**
+    # 白名单列表，不经过认证过滤器
     white-list:
       # 认证授权类
       - /api/auth/login/**
