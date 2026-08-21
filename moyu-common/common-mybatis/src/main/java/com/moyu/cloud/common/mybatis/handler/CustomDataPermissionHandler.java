@@ -101,7 +101,16 @@ public class CustomDataPermissionHandler implements MultiDataPermissionHandler {
                 // 第三种方法使用 orgPath find_in_set, 这种处理方式与like类似但效率高点
                 // sqlStr = "( " + orgColumn + " = '" + orgCode + "' OR find_in_set('" + orgCode + "', " + annotation.orgPathColumn() + " ) )";
                 if (ObjectUtil.isEmpty(scopeSet)) {
-                    log.warn("dataScope为本机构及以下，但scopeSet为空,将不限制数据权限");
+                    log.warn("dataScope为{}，但scopeSet为空,将不限制数据范围", scopeEnum.name());
+                } else {
+                    sqlStr = orgColumn + " IN ('" + CollectionUtil.join(scopeSet, "', '") + "')";
+                }
+                break;
+            }
+            case COMPANY: {
+                //  本公司及以下
+                if (ObjectUtil.isEmpty(scopeSet)) {
+                    log.warn("dataScope为{}，但scopeSet为空,将不限制数据范围", scopeEnum.name());
                 } else {
                     sqlStr = orgColumn + " IN ('" + CollectionUtil.join(scopeSet, "', '") + "')";
                 }
@@ -110,7 +119,7 @@ public class CustomDataPermissionHandler implements MultiDataPermissionHandler {
             case ORG_DEFINE: {
                 //  自定义
                 if (ObjectUtil.isEmpty(scopeSet)) {
-                    log.warn("dataScope为自定义，但scopeSet为空,将不限制数据权限");
+                    log.warn("dataScope为{}，但scopeSet为空,将不限制数据范围", scopeEnum.name());
                 } else {
                     sqlStr = orgColumn + " IN ('" + CollectionUtil.join(scopeSet, "', '") + "')";
                 }
