@@ -7,7 +7,6 @@ import com.moyu.cloud.boot.system.model.param.SysUserParam;
 import com.moyu.cloud.boot.system.model.vo.SysUserVO;
 import com.moyu.cloud.boot.system.service.SysUserService;
 import com.moyu.cloud.common.core.annotation.Log;
-import com.moyu.cloud.common.core.annotation.PreDataScope;
 import com.moyu.cloud.common.core.annotation.SysLog;
 import com.moyu.cloud.common.core.model.PageData;
 import com.moyu.cloud.common.core.model.Result;
@@ -38,7 +37,6 @@ public class SysUserController {
      */
     @SysLog(module = "system", logType = 2, value = "分页查询用户列表")
     @SaCheckPermission(value = "sys:user:page", orRole = "ROOT")
-    @PreDataScope("sys:user:page")
     @PostMapping("/page")
     public Result<PageData<SysUserVO>> pageList(@RequestBody SysUserParam userParam) {
         Assert.isTrue(ObjectUtil.isAllNotEmpty(userParam.getPageNum(), userParam.getPageSize()), "分页参数pageNum,pageSize都不能为空");
@@ -50,7 +48,7 @@ public class SysUserController {
      * 获取详情
      */
     @SysLog(module = "system", logType = 2, value = "查询用户详情")
-//    @PreAuthorize("hasRole('ROOT') || hasAuthority('sys:user:detail')")
+//    @SaCheckPermission("sys:user:detail")
     @PostMapping("/detail")
     public Result<SysUserVO> detail(@RequestBody SysUserParam userParam) {
         Assert.isTrue(!ObjectUtil.isAllEmpty(userParam.getId(), userParam.getAccount()), "id和account不能同时为空");

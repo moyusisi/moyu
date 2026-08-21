@@ -8,7 +8,6 @@ import com.moyu.cloud.boot.system.model.param.SysOrgParam;
 import com.moyu.cloud.boot.system.model.vo.SysOrgVO;
 import com.moyu.cloud.boot.system.service.SysOrgService;
 import com.moyu.cloud.common.core.annotation.Log;
-import com.moyu.cloud.common.core.annotation.PreDataScope;
 import com.moyu.cloud.common.core.annotation.SysLog;
 import com.moyu.cloud.common.core.model.PageData;
 import com.moyu.cloud.common.core.model.Result;
@@ -40,7 +39,6 @@ public class SysOrgController {
      */
     @SysLog(module = "system", logType = 2, value = "分页查询组织列表")
     @SaCheckPermission(value = "sys:org:page", orRole = "ROOT")
-    @PreDataScope("sys:org:page")
     @PostMapping("/page")
     public Result<PageData<SysOrgVO>> pageList(@RequestBody SysOrgParam orgParam) {
         Assert.isTrue(ObjectUtil.isAllNotEmpty(orgParam.getPageNum(), orgParam.getPageSize()), "分页参数pageNum,pageSize都不能为空");
@@ -52,7 +50,6 @@ public class SysOrgController {
      * 获取组织树
      */
     @Log(jsonLog = true, response = false)
-    @PreDataScope("sys:org:tree")
     @PostMapping("/tree")
     public Result<List<Tree<String>>> tree() {
         List<Tree<String>> list = sysOrgService.tree();
@@ -63,7 +60,7 @@ public class SysOrgController {
      * 获取详情
      */
     @SysLog(module = "system", logType = 2, value = "查询组织详情")
-//    @PreAuthorize("hasRole('ROOT') || hasAuthority('sys:org:detail')")
+//    @SaCheckPermission("sys:org:detail")
     @PostMapping("/detail")
     public Result<SysOrgVO> detail(@RequestBody SysOrgParam orgParam) {
         Assert.isTrue(!ObjectUtil.isAllEmpty(orgParam.getId(), orgParam.getCode()), "id和code不能同时为空");

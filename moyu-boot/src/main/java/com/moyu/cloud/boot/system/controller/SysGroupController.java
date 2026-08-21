@@ -2,6 +2,7 @@ package com.moyu.cloud.boot.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.util.ObjectUtil;
 import com.moyu.cloud.boot.system.model.param.SysGroupParam;
 import com.moyu.cloud.boot.system.model.vo.SysGroupVO;
@@ -9,7 +10,6 @@ import com.moyu.cloud.boot.system.model.vo.SysRoleVO;
 import com.moyu.cloud.boot.system.model.vo.SysUserVO;
 import com.moyu.cloud.boot.system.service.SysGroupService;
 import com.moyu.cloud.common.core.annotation.Log;
-import com.moyu.cloud.common.core.annotation.PreDataScope;
 import com.moyu.cloud.common.core.annotation.SysLog;
 import com.moyu.cloud.common.core.model.PageData;
 import com.moyu.cloud.common.core.model.Result;
@@ -40,8 +40,7 @@ public class SysGroupController {
      * 分页获取角色列表
      */
     @SysLog(module = "system", logType = 2, value = "分页查询岗位列表")
-//    @PreAuthorize("hasRole('ROOT') || hasAuthority('sys:group:page')")
-    @PreDataScope("sys:group:page")
+//    @SaCheckPermission("sys:group:page")
     @PostMapping("/page")
     public Result<PageData<SysGroupVO>> pageList(@RequestBody SysGroupParam groupParam) {
         Assert.isTrue(ObjectUtil.isAllNotEmpty(groupParam.getPageNum(), groupParam.getPageSize()), "分页参数pageNum,pageSize都不能为空");
@@ -53,7 +52,6 @@ public class SysGroupController {
      * 获取详情
      */
     @SysLog(module = "system", logType = 2, value = "查询岗位详情", response = true)
-//    @PreAuthorize("hasRole('ROOT') || hasAuthority('sys:group:detail')")
     @SaCheckPermission(value = "sys:group:detail", orRole = "ROOT")
     @PostMapping("/detail")
     public Result<SysGroupVO> detail(@RequestBody SysGroupParam groupParam) {
@@ -65,7 +63,6 @@ public class SysGroupController {
      * 添加
      */
     @SysLog(module = "system", logType = 2, value = "新增岗位", response = true)
-//    @PreAuthorize("hasRole('ROOT') || hasAuthority('sys:group:add')")
     @SaCheckPermission(value = "sys:group:add", orRole = "ROOT")
     @PostMapping("/add")
     public Result<String> add(@Validated @RequestBody SysGroupParam groupParam) {
@@ -101,7 +98,7 @@ public class SysGroupController {
      * 查询指定分组的角色列表
      */
     @SysLog(module = "system", logType = 2, value = "查询岗位内的角色列表")
-//    @PreAuthorize("hasRole('ROOT') || hasAuthority('sys:group:roleList')")
+//    @SaCheckPermission("sys:group:roleList")
     @PostMapping("/roleList")
     public Result<List<SysRoleVO>> roleList(@RequestBody SysGroupParam groupParam) {
         Assert.notEmpty(groupParam.getCode(), "分组code不能为空");
@@ -139,7 +136,7 @@ public class SysGroupController {
      * 查询指定分组的角色列表
      */
     @SysLog(module = "system", logType = 2, value = "查询岗位内的用户列表")
-//    @PreAuthorize("hasRole('ROOT') || hasAuthority('sys:group:userList')")
+//    @SaCheckPermission("sys:group:userList")
     @PostMapping("/userList")
     public Result<List<SysUserVO>> userList(@RequestBody SysGroupParam groupParam) {
         Assert.notEmpty(groupParam.getCode(), "分组code不能为空");
@@ -177,11 +174,22 @@ public class SysGroupController {
      * 查询指定分组的角色列表
      */
     @SysLog(module = "system", logType = 2, value = "查询用户的岗位列表")
-//    @PreAuthorize("hasRole('ROOT') || hasAuthority('sys:group:userGroupList')")
+//    @SaCheckPermission("sys:group:userGroupList")
     @PostMapping("/userGroupList")
     public Result<List<SysGroupVO>> userGroupList(@RequestBody SysGroupParam groupParam) {
         Assert.notEmpty(groupParam.getUsername(), "用户名username不能为空");
         List<SysGroupVO> list = sysGroupService.userGroupList(groupParam);
         return Result.success(list);
     }
+
+    /**
+     * 查看岗位拥有的菜单
+     */
+    @PostMapping("/menuTree")
+    @SysLog(module = "system", logType = 2, value = "查看岗位拥有的菜单")
+    public Result<List<Tree<String>>> menuTree(@RequestBody SysGroupParam param) {
+        Assert.notEmpty(param.getCode(), "岗位code不能为空");
+        return Result.success(sysGroupService.menuTree(param));
+    }
+
 }

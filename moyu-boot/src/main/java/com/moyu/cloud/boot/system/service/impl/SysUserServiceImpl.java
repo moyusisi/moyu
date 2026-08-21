@@ -7,7 +7,6 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -18,9 +17,10 @@ import com.moyu.cloud.boot.system.mapper.SysUserMapper;
 import com.moyu.cloud.boot.system.model.entity.SysUser;
 import com.moyu.cloud.boot.system.model.param.SysUserParam;
 import com.moyu.cloud.boot.system.model.vo.SysUserVO;
+import com.moyu.cloud.boot.system.service.PasswordEncoder;
+import com.moyu.cloud.boot.system.service.SysConfigService;
 import com.moyu.cloud.boot.system.service.SysOrgService;
 import com.moyu.cloud.boot.system.service.SysUserService;
-import com.moyu.cloud.common.authZ.service.PasswordEncoder;
 import com.moyu.cloud.common.authZ.util.LoginUserUtils;
 import com.moyu.cloud.common.core.enums.DataScopeEnum;
 import com.moyu.cloud.common.core.enums.ResultCodeEnum;
@@ -50,6 +50,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Resource
     private PasswordEncoder passwordEncoder;
+
+    @Resource
+    private SysConfigService sysConfigService;
 
     @Resource
     private DaySeqService daySeqService;
@@ -182,7 +185,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         // 初始密码为系统默认
         if (ObjectUtil.isEmpty(user.getPassword())) {
-            user.setPassword(passwordEncoder.encode(SysConstants.DEFAULT_PASSWORD));
+            String defaultPwd = sysConfigService.getCacheValue(SysConstants.Config.DEFAULT_PWD);
+            defaultPwd = StrUtil.emptyToDefault(defaultPwd, SysConstants.DEFAULT_PASSWORD);
+            user.setPassword(passwordEncoder.encode(defaultPwd));
         }
         this.save(user);
     }
@@ -216,10 +221,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public void deleteByIds(SysUserParam param) {
         // 待删除的id集合
         Set<Long> idSet = param.getIds();
+        // 删除时先查再删
+        List<SysUser> userList = this.listByIds(idSet);
+        // 要删除的和查询到的进行比对
+        if (ObjectUtil.notEqual(idSet.size(), userList.size())) {
+            throw new BusinessException(ResultCodeEnum.INVALID_PARAMETER_ERROR, "删除失败，未查到原数据");
+        }
+        // 物理删除
+        //this.removeByIds(idSet);
         // 逻辑删除
-        UpdateWrapper<SysUser> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.in("id", idSet).set("deleted", 1);
-        this.update(updateWrapper);
+        this.update(Wrappers.lambdaUpdate(SysUser.class).in(SysUser::getId, idSet).set(SysUser::getDeleted, 1));
     }
 
     @Override
@@ -241,9 +252,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (old == null) {
             throw new BusinessException(ResultCodeEnum.INVALID_PARAMETER_ERROR, "更新失败，未查到原数据");
         }
+        String defaultPwd = sysConfigService.getCacheValue(SysConstants.Config.DEFAULT_PWD);
+        defaultPwd = StrUtil.emptyToDefault(defaultPwd, SysConstants.DEFAULT_PASSWORD);
         this.update(Wrappers.lambdaUpdate(SysUser.class)
                 .eq(SysUser::getId, old.getId())
-                .set(SysUser::getPassword, passwordEncoder.encode(SysConstants.DEFAULT_PASSWORD)));
+                .set(SysUser::getPassword, passwordEncoder.encode(defaultPwd)));
     }
 
     /**

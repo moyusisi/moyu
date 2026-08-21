@@ -27,10 +27,10 @@ import com.moyu.cloud.boot.system.model.param.SysOrgParam;
 import com.moyu.cloud.boot.system.model.vo.SysOrgVO;
 import com.moyu.cloud.boot.system.service.SysOrgService;
 import com.moyu.cloud.common.authZ.util.LoginUserUtils;
-import com.moyu.cloud.common.core.enums.DataScopeEnum;
 import com.moyu.cloud.common.core.enums.ResultCodeEnum;
 import com.moyu.cloud.common.core.exception.BusinessException;
 import com.moyu.cloud.common.core.model.PageData;
+import com.moyu.cloud.common.mybatis.util.DataScopeHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -104,26 +104,8 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         queryWrapper.eq(SysOrg::getDeleted, 0);
         // 指定排序
         queryWrapper.orderByAsc(SysOrg::getSortNum);
-
         // 非ROOT则限制数据权限
-        if (!LoginUserUtils.isRoot()) {
-            // 指定的列名
-            Integer dataScope = LoginUserUtils.getDataScope();
-            Set<String> scopeSet = LoginUserUtils.getScopes();
-            if (DataScopeEnum.SELF.getCode().equals(dataScope)) {
-                String username = LoginUserUtils.getUsername();
-                queryWrapper.eq(SysOrg::getCreateBy, username);
-            } else if (DataScopeEnum.ORG.getCode().equals(dataScope)) {
-                String orgCode = LoginUserUtils.getOrgCode();
-                queryWrapper.eq(SysOrg::getCode, orgCode);
-            } else if (DataScopeEnum.ORG_CHILD.getCode().equals(dataScope)) {
-                queryWrapper.in(ObjectUtil.isNotEmpty(scopeSet), SysOrg::getCode, scopeSet);
-            } else if (DataScopeEnum.COMPANY.getCode().equals(dataScope)) {
-                queryWrapper.in(ObjectUtil.isNotEmpty(scopeSet), SysOrg::getCode, scopeSet);
-            } else if (DataScopeEnum.ORG_DEFINE.getCode().equals(dataScope)) {
-                queryWrapper.in(ObjectUtil.isNotEmpty(scopeSet), SysOrg::getCode, scopeSet);
-            }
-        }
+        DataScopeHelper.dataScopeFilter(queryWrapper, SysOrg::getName, SysOrg::getCode);
         // 分页查询
         Page<SysOrg> page = new Page<>(param.getPageNum(), param.getPageSize());
         Page<SysOrg> orgPage = this.page(page, queryWrapper);
@@ -177,6 +159,12 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     public void deleteByIds(SysOrgParam param) {
         // 待删除的id集合
         Set<Long> idSet = param.getIds();
+        // 删除时先查再删
+        List<SysOrg> orgList = this.listByIds(idSet);
+        // 要删除的和查询到的进行比对
+        if (ObjectUtil.notEqual(idSet.size(), orgList.size())) {
+            throw new BusinessException(ResultCodeEnum.INVALID_PARAMETER_ERROR, "删除失败，未查到原数据");
+        }
         // 逻辑删除
         this.update(Wrappers.lambdaUpdate(SysOrg.class).in(SysOrg::getId, idSet).set(SysOrg::getDeleted, 1));
     }
@@ -191,10 +179,11 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     }
 
     @Override
-    public String orgCompany(String orgCode) {
-        String companyCode = orgCode;
+    public String orgCompany(String orgCode, Tree<String> rootTree) {
+        rootTree = ObjectUtil.defaultIfNull(rootTree, singleTree());
         // 获取组织结构树
-        Tree<String> node = singleTree().getNode(orgCode);
+        Tree<String> node = rootTree.getNode(orgCode);
+        String companyCode = orgCode;
         while (null != node) {
             if (OrgTypeEnum.COMPANY.getCode().equals(node.get("orgType"))) {
                 companyCode = node.getId();
@@ -214,13 +203,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         if (LoginUserUtils.isRoot()) {
             return rootTree.getChildren();
         }
-        // 数据范围
-        Integer dataScope = LoginUserUtils.getDataScope();
-        // 未设置或设置为不限制时，返回全树
-        if (dataScope == null || DataScopeEnum.ALL.getCode().equals(dataScope)) {
-            return rootTree.getChildren();
-        }
-        // 其他情况都按照数据范围返回公司树
+        // 默认返回所属的公司树
         String orgCode = getUserCompanyCode(rootTree, LoginUserUtils.getOrgCode());
         // 用户直属公司orgTree
         Tree<String> orgTree = rootTree.getNode(orgCode);
@@ -230,7 +213,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
 
     @Override
     public Tree<String> singleTree() {
-        // 没有把整个tree写入缓存，因为反序列化不好处理
+        // tree太大需要有缓存
         return loadRootTree();
     }
 

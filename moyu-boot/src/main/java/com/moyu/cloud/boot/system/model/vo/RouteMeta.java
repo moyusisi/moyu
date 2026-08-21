@@ -13,7 +13,7 @@ import lombok.Data;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Meta {
+public class RouteMeta {
     /**
      * 路由title
      */
@@ -22,7 +22,7 @@ public class Meta {
     /**
      * 标识路由的类型
      *
-     * @see com.moyu.cloud.boot.system.enums.ResourceTypeEnum#name().toLowerCase
+     * @see com.moyu.cloud.boot.system.enums.MenuTypeEnum#name().toLowerCase
      */
     private String type;
 

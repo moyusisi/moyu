@@ -7,7 +7,6 @@ import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -175,10 +174,16 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupMapper, SysGroup> i
     public void deleteByIds(SysGroupParam param) {
         // 待删除的id集合
         Set<Long> idSet = param.getIds();
+        // 删除时先查再删
+        List<SysGroup> groupList = this.listByIds(idSet);
+        // 要删除的和查询到的进行比对
+        if (ObjectUtil.notEqual(idSet.size(), groupList.size())) {
+            throw new BusinessException(ResultCodeEnum.INVALID_PARAMETER_ERROR, "删除失败，未查到原数据");
+        }
+        // 物理删除
+        //this.removeByIds(idSet);
         // 逻辑删除
-        LambdaUpdateWrapper<SysGroup> updateWrapper = Wrappers.lambdaUpdate(SysGroup.class);
-        updateWrapper.in(SysGroup::getId, idSet).set(SysGroup::getDeleted, 1);
-        this.update(updateWrapper);
+        this.update(Wrappers.lambdaUpdate(SysGroup.class).in(SysGroup::getId, idSet).set(SysGroup::getDeleted, 1));
     }
 
     @Override
@@ -368,6 +373,15 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupMapper, SysGroup> i
         if (ObjectUtil.isNotEmpty(ids)) {
             sysRelationService.removeByIds(ids);
         }
+    }
+
+    @Override
+    public List<Tree<String>> menuTree(SysGroupParam param) {
+        // 查询指定group的所有role
+        Set<String> roleSet = sysRelationService.groupRole(param.getCode());
+        // 所有岗位都拥有默认角色
+        roleSet.add(sysRoleService.defaultRole());
+        return sysRoleService.menuTree(SysRoleParam.builder().codeSet(roleSet).build());
     }
 
     @Override

@@ -2,20 +2,20 @@ package com.moyu.cloud.boot.system.service;
 
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.moyu.cloud.boot.system.model.entity.SysResource;
-import com.moyu.cloud.boot.system.model.param.SysResourceParam;
-import com.moyu.cloud.boot.system.model.vo.SysResourceVO;
+import com.moyu.cloud.boot.system.model.entity.SysMenu;
+import com.moyu.cloud.boot.system.model.param.SysMenuParam;
+import com.moyu.cloud.boot.system.model.vo.SysMenuVO;
 import com.moyu.cloud.common.core.model.PageData;
 
 import java.util.List;
 
 /**
- * 资源权限服务类Service
+ * 菜单资源服务类Service
  *
  * @author shisong
  * @since 2024-12-10 21:05:13
  */
-public interface SysResourceService extends IService<SysResource> {
+public interface SysMenuService extends IService<SysMenu> {
 
     /**
      * 菜单树,包含按钮(借助hutool的树结构)
@@ -23,48 +23,48 @@ public interface SysResourceService extends IService<SysResource> {
      * @param param 查询条件(可指定module)
      * @return 菜单树List集合
      */
-    List<Tree<String>> tree(SysResourceParam param);
+    List<Tree<String>> tree(SysMenuParam param);
 
     /**
      * 获取菜单列表
      */
-    List<SysResourceVO> list(SysResourceParam param);
+    List<SysMenuVO> list(SysMenuParam param);
 
     /**
      * 分页获取菜单列表
      */
-    PageData<SysResourceVO> pageList(SysResourceParam param);
+    PageData<SysMenuVO> pageList(SysMenuParam param);
 
     /**
      * 获取菜单详情
      */
-    SysResourceVO detail(SysResourceParam param);
+    SysMenuVO detail(SysMenuParam param);
 
     /**
      * 添加菜单
      */
-    void add(SysResourceParam param);
+    void add(SysMenuParam param);
 
     /**
      * 通过ids删除，且不会集联删除
      */
-    void deleteByIds(SysResourceParam param);
+    void deleteByIds(SysMenuParam param);
 
     /**
      * 通过codes删除，要删除的节点下还有其他子节点则无法删除
      */
-    void deleteTree(SysResourceParam param);
+    void deleteTree(SysMenuParam param);
 
     /**
      * 修改菜单
      */
-    void update(SysResourceParam param);
+    void update(SysMenuParam param);
 
     /**
      * 获取菜单树选择器(字段少，不包含按钮)
      *
      * @param param 可指定module
      */
-    List<Tree<String>> menuTreeSelector(SysResourceParam param);
+    List<Tree<String>> menuTreeSelector(SysMenuParam param);
 
 }

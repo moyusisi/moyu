@@ -1,6 +1,5 @@
 package com.moyu.cloud.boot.system.service.impl;
 
-
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNode;
@@ -10,19 +9,20 @@ import cn.hutool.core.lang.tree.parser.DefaultNodeParser;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.moyu.cloud.boot.system.constant.SysConstants;
-import com.moyu.cloud.boot.system.enums.ResourceTypeEnum;
+import com.moyu.cloud.boot.system.enums.MenuTypeEnum;
 import com.moyu.cloud.boot.system.model.entity.SysGroup;
-import com.moyu.cloud.boot.system.model.entity.SysResource;
+import com.moyu.cloud.boot.system.model.entity.SysMenu;
 import com.moyu.cloud.boot.system.model.entity.SysUser;
-import com.moyu.cloud.boot.system.model.entity.ext.ResourceExt;
+import com.moyu.cloud.boot.system.model.entity.ext.MenuExt;
 import com.moyu.cloud.boot.system.model.param.SysRoleParam;
 import com.moyu.cloud.boot.system.model.vo.GroupInfo;
-import com.moyu.cloud.boot.system.model.vo.Meta;
+import com.moyu.cloud.boot.system.model.vo.RouteMeta;
 import com.moyu.cloud.boot.system.model.vo.SysRoleVO;
 import com.moyu.cloud.boot.system.model.vo.UserInfo;
 import com.moyu.cloud.boot.system.service.*;
@@ -50,9 +50,6 @@ public class UserCenterServiceImpl implements UserCenterService {
 
     @Resource
     private SysUserService sysUserService;
-
-    @Resource
-    private SysResourceService sysResourceService;
 
     @Resource
     private SysOrgService sysOrgService;
@@ -123,22 +120,18 @@ public class UserCenterServiceImpl implements UserCenterService {
             return Lists.newArrayList();
         }
         // 查询所有的菜单(不含按钮)
-        List<SysResource> menuList = sysResourceService.list(Wrappers.lambdaQuery(SysResource.class)
+        List<SysMenu> menuList = Db.list(Wrappers.lambdaQuery(SysMenu.class)
                 // 不能是按钮
-                .ne(SysResource::getResourceType, ResourceTypeEnum.BUTTON.getCode())
-                .eq(SysResource::getDeleted, 0)
-                .orderByAsc(SysResource::getSortNum)
+                .ne(SysMenu::getMenuType, MenuTypeEnum.BUTTON.getCode())
+                .eq(SysMenu::getDeleted, 0)
+                .orderByAsc(SysMenu::getSortNum)
         );
         // 用户有权限的菜单(不含按钮) + 所有模块、目录
-        List<SysResource> userMenuList = CollectionUtil.newArrayList();
+        List<SysMenu> userMenuList = CollectionUtil.newArrayList();
         menuList.forEach(sysMenu -> {
-            if (ResourceTypeEnum.MODULE.getCode().equals(sysMenu.getResourceType())) {
-                // 前端的路由对象path不能为空
-                if (ObjectUtil.isEmpty(sysMenu.getPath())) {
-                    sysMenu.setPath(StrUtil.SLASH + sysMenu.getCode());
-                }
+            if (MenuTypeEnum.MODULE.getCode().equals(sysMenu.getMenuType())) {
                 userMenuList.add(sysMenu);
-            } else if (ResourceTypeEnum.DIR.getCode().equals(sysMenu.getResourceType())) {
+            } else if (MenuTypeEnum.DIR.getCode().equals(sysMenu.getMenuType())) {
                 userMenuList.add(sysMenu);
             } else {
                 // 有权限才添加(菜单、内链、外链等)
@@ -150,17 +143,17 @@ public class UserCenterServiceImpl implements UserCenterService {
         // 构建菜单路由树结构
         Tree<String> singleTree = buildMenuTree(userMenuList, SysConstants.ROOT_NODE_ID);
 
-        // 移除空目录(本节点或子节点满足条件，则保留当前节点及其所有子节点)
+        // 剪枝,移除空目录(本节点或子节点满足条件，则保留当前节点及其所有子节点)
         singleTree.filter(tree -> {
             // id=0或parentId=0均不符合要求(排除根和模块)
             if (SysConstants.ROOT_NODE_ID.equals(tree.getId()) || SysConstants.ROOT_NODE_ID.equals(tree.getParentId())) {
                 return false;
             }
             if (ObjectUtil.isNotEmpty(tree.get("meta"))) {
-                Meta meta = (Meta) tree.get("meta");
+                RouteMeta meta = (RouteMeta) tree.get("meta");
                 String metaType = meta.getType();
                 // 结点不是目录则保留
-                boolean notDir = !ResourceTypeEnum.DIR.name().equalsIgnoreCase(metaType) && !ResourceTypeEnum.MODULE.name().equalsIgnoreCase(metaType);
+                boolean notDir = !MenuTypeEnum.DIR.name().equalsIgnoreCase(metaType) && !MenuTypeEnum.MODULE.name().equalsIgnoreCase(metaType);
                 return notDir;
             } else {
                 return false;
@@ -215,7 +208,7 @@ public class UserCenterServiceImpl implements UserCenterService {
         // 岗位权限 权限标识集合(仅接口,无菜单)
         loginUser.setPerms(sysRoleService.rolePerms(roleSet));
         // 接口权限的数据范围
-        loginUser.setPermScopeMap(sysRoleService.rolePermScopeMap(roleSet, group.getOrgCode()));
+        loginUser.setDataScopeMap(sysRoleService.roleDataScopeMap(roleSet, group.getOrgCode()));
         // 数据范围默认本人数据，真正的数据范围在PreDataScope切面中赋值
         loginUser.setDataScope(DataScopeEnum.SELF.getCode());
         tokenService.switchUser(loginUser);
@@ -228,7 +221,7 @@ public class UserCenterServiceImpl implements UserCenterService {
      * @param rootId   指定的根节点(从树中查找此rootId)
      * @return 返回以rootId为根的树，可能是子树或多棵树
      */
-    private Tree<String> buildMenuTree(List<SysResource> menuList, String rootId) {
+    private Tree<String> buildMenuTree(List<SysMenu> menuList, String rootId) {
         // 配置TreeNode使用指定的字段名
         TreeNodeConfig nodeConfig = new TreeNodeConfig();
         nodeConfig.setIdKey("code");
@@ -237,35 +230,37 @@ public class UserCenterServiceImpl implements UserCenterService {
         // 结构转换
         List<TreeNode<String>> treeNodeList = menuList.stream()
                 .map(menu -> {
-                    ResourceTypeEnum resourceType = ResourceTypeEnum.getByCode(menu.getResourceType());
+                    MenuTypeEnum menuType = MenuTypeEnum.getByCode(menu.getMenuType());
                     TreeNode<String> node = new TreeNode<>(menu.getCode(), menu.getParentCode(), menu.getName(), menu.getSortNum());
                     // path、name、component、redirect、hidden
                     Map<String, Object> extra = new HashMap<>();//BeanUtil.beanToMap(menu, false, true);
                     extra.put("path", menu.getPath());
                     extra.put("component", menu.getComponent());
-                    if (ResourceTypeEnum.DIR.equals(resourceType)) {
-                        extra.put("redirect", menu.getLink());
-                    } else if (ResourceTypeEnum.MODULE.equals(resourceType)) {
-                        extra.put("redirect", menu.getLink());
-                    }
-                    Meta meta = new Meta();
+                    RouteMeta meta = new RouteMeta();
                     meta.setIcon(menu.getIcon());
                     meta.setTitle(menu.getName());
                     // metaType 使用字符串
-                    meta.setType(resourceType.name().toLowerCase());
+                    meta.setType(menuType.name().toLowerCase());
                     // 如果设置了不可见，那么设置hidden
                     if (ObjectUtil.equal(menu.getVisible(), 0)) {
                         meta.setHidden(true);
                     }
                     // 扩展字段
-                    ResourceExt.MetaExt ext = gson.fromJson(menu.getExtJson(), ResourceExt.MetaExt.class);
+                    MenuExt.MetaExt ext = gson.fromJson(menu.getExtJson(), MenuExt.MetaExt.class);
                     if (ObjectUtil.isNotEmpty(ext)) {
                         meta.setBrief(ObjectUtil.equal(ext.getBrief(), 1));
                         meta.setAffix(ObjectUtil.equal(ext.getAffix(), 1));
                         meta.setKeepAlive(ObjectUtil.equal(ext.getKeepAlive(), 1));
                     }
-                    // 如果是内链或者外链，设置url
-                    if (ResourceTypeEnum.IFRAME.equals(resourceType) || ResourceTypeEnum.LINK.equals(resourceType)) {
+                    if (MenuTypeEnum.MODULE.equals(menuType)) {
+                        extra.put("path", StrUtil.SLASH + menu.getCode());
+                        extra.put("redirect", menu.getPath());
+                    } else if (MenuTypeEnum.DIR.equals(menuType)) {
+                        extra.put("path", StrUtil.SLASH + menu.getCode());
+                        extra.put("redirect", menu.getPath());
+                    } else if (MenuTypeEnum.IFRAME.equals(menuType) || MenuTypeEnum.LINK.equals(menuType)) {
+                        extra.put("path", StrUtil.SLASH + menu.getCode());
+                        // 如果是内链或者外链，设置url
                         meta.setUrl(menu.getPath());
                     }
                     extra.put("meta", meta);
