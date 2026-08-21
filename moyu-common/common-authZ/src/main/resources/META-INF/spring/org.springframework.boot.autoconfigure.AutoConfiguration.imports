@@ -1,6 +1,5 @@
 com.moyu.cloud.common.authZ.config.AuthProperties
 com.moyu.cloud.common.authZ.config.SaTokenConfigure
-com.moyu.cloud.common.authZ.aop.PreDataScopeAspect
 com.moyu.cloud.common.authZ.service.impl.RedisTokenServiceImpl
 com.moyu.cloud.common.authZ.service.impl.JwtTokenServiceImpl
 com.moyu.cloud.common.authZ.service.impl.SM4PasswordEncoder

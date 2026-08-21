@@ -2,6 +2,7 @@ package com.moyu.cloud.common.authZ.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.stp.parameter.SaLoginParameter;
+import com.moyu.cloud.common.authZ.constant.AuthConstants;
 import com.moyu.cloud.common.authZ.model.LoginUser;
 import com.moyu.cloud.common.authZ.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Service;
  */
 @Slf4j
 @Service
-@ConditionalOnProperty(value = "custom.auth.session.type", havingValue = "redis", matchIfMissing = true)
+@ConditionalOnProperty(value = "custom.auth.token-type", havingValue = "redis", matchIfMissing = true)
 public class RedisTokenServiceImpl implements TokenService {
 
     @Override
@@ -29,7 +30,7 @@ public class RedisTokenServiceImpl implements TokenService {
         // 账户相关的信息缓存到Account-Session中
         StpUtil.getSession().set("name", loginUser.getName());
         // 将登录用户信息缓存到Token-Session中
-        StpUtil.getTokenSession().set("loginUser", loginUser);
+        StpUtil.getTokenSession().set(AuthConstants.LOGIN_USER, loginUser);
         return StpUtil.getTokenInfo().getTokenValue();
     }
 
@@ -38,7 +39,7 @@ public class RedisTokenServiceImpl implements TokenService {
         // 账户相关的信息缓存到Account-Session中
         StpUtil.getSession().set("name", loginUser.getName());
         // 将登录用户信息缓存到Token-Session中
-        StpUtil.getTokenSession().set("loginUser", loginUser);
+        StpUtil.getTokenSession().set(AuthConstants.LOGIN_USER, loginUser);
     }
 
     @Override

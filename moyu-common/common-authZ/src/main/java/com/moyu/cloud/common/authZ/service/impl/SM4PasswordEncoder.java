@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
- * 加密器服务sm4算法实现
+ * 密码编码器sm4算法实现
  *
  * @author shisong
  * @since 2026-02-12
@@ -25,13 +25,15 @@ public class SM4PasswordEncoder implements PasswordEncoder {
     @Resource
     private AuthProperties properties;
 
-    public String encode(String rawPassword) {
+    @Override
+    public String encode(CharSequence rawPassword) {
         // 自定义密钥
         byte[] key = properties.getSm4Key().getBytes(StandardCharsets.UTF_8);
-        return SmUtil.sm4(key).encryptHex(rawPassword);
+        return SmUtil.sm4(key).encryptHex(rawPassword.toString());
     }
 
-    public boolean matches(String rawPassword, String encodedPassword) {
+    @Override
+    public boolean matches(CharSequence rawPassword, String encodedPassword) {
         byte[] key = properties.getSm4Key().getBytes(StandardCharsets.UTF_8);
         String plain = SmUtil.sm4(key).decryptStr(encodedPassword, StandardCharsets.UTF_8);
         return Objects.equals(rawPassword, plain);

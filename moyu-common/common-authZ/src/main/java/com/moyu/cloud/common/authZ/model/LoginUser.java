@@ -53,7 +53,6 @@ public class LoginUser implements Serializable {
 
     /**
      * 数据范围(动态变化)
-     * @see com.moyu.boot.common.core.annotation.PreDataScope
      */
     private Integer dataScope;
     /**
@@ -62,9 +61,9 @@ public class LoginUser implements Serializable {
     private Set<String> scopeSet;
 
     /**
-     * 接口权限对应的数据范围
+     * 接口对应的数据范围
      */
-    private Map<String, DataScopeInfo> permScopeMap;
+    private Map<String, LoginUser.DataScopeInfo> dataScopeMap;
 
     /**
      * 数据范围信息
@@ -75,7 +74,7 @@ public class LoginUser implements Serializable {
         /**
          * 数据权限(字典 0无限制 1仅本人数据 2仅本机构 3本机构及以下 4本公司及以下 5自定义)
          *
-         * @see com.moyu.boot.common.core.enums.DataScopeEnum
+         * @see com.moyu.cloud.common.core.enums.DataScopeEnum
          */
         private Integer dataScope;
 
@@ -84,5 +83,4 @@ public class LoginUser implements Serializable {
          */
         private Set<String> scopeSet;
     }
-
 }

@@ -1,6 +1,7 @@
 package com.moyu.cloud.common.authZ.util;
 
-import cn.dev33.satoken.stp.StpUtil;
+import cn.dev33.satoken.context.SaHolder;
+import com.moyu.cloud.common.authZ.constant.AuthConstants;
 import com.moyu.cloud.common.authZ.model.LoginUser;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,18 +19,15 @@ import java.util.Set;
 public class LoginUserUtils {
 
     /**
-     * ROOT管理员角色编码
-     */
-    public static final String ROOT_ROLE = "ROOT";
-
-    /**
      * 获取当前登录用户信息
      **/
     public static Optional<LoginUser> getLoginUser() {
         Optional<LoginUser> optUser = Optional.empty();
-        if (StpUtil.isLogin()) {
-            // StpUtil.getTokenSession()时会校验是否登录(无则抛出异常)
-            optUser = Optional.of((LoginUser) StpUtil.getTokenSession().get("loginUser"));
+        // SaStorage 为请求作用域，存储的数据只在一次请求内有效。
+        Object userObj = SaHolder.getStorage().get(AuthConstants.LOGIN_USER);
+        // set动作再SaServletFilter中完成
+        if (userObj instanceof LoginUser) {
+            optUser = Optional.of((LoginUser) userObj);
         }
         return optUser;
     }
@@ -83,7 +81,7 @@ public class LoginUserUtils {
      * 是否为root超级管理员
      */
     public static boolean isRoot() {
-        return getRoles().contains(ROOT_ROLE);
+        return getRoles().contains(AuthConstants.ROOT_ROLE);
     }
 
 }

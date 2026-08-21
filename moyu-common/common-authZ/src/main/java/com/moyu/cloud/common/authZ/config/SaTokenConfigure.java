@@ -2,6 +2,7 @@ package com.moyu.cloud.common.authZ.config;
 
 import cn.dev33.satoken.config.SaTokenConfig;
 import cn.dev33.satoken.context.SaHolder;
+import cn.dev33.satoken.context.model.SaStorage;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.filter.SaServletFilter;
 import cn.dev33.satoken.jwt.StpLogicJwtForSimple;
@@ -10,7 +11,8 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.servlet.ServletUtil;
 import com.google.gson.Gson;
-import com.moyu.cloud.common.authZ.service.TokenService;
+import com.moyu.cloud.common.authZ.constant.AuthConstants;
+import com.moyu.cloud.common.authZ.model.LoginUser;
 import com.moyu.cloud.common.authZ.util.ExceptionWrapperUtils;
 import com.moyu.cloud.common.core.enums.ResultCodeEnum;
 import com.moyu.cloud.common.core.model.Result;
@@ -44,13 +46,13 @@ public class SaTokenConfigure {
     @Resource
     public void configSaToken(SaTokenConfig config) {
         // token 名称（同时也是 cookie 名称）
-        config.setTokenName(TokenService.TOKEN_NAME);
+        config.setTokenName(AuthConstants.TOKEN_NAME);
         // 指定 token 提交时的前缀
-        config.setTokenPrefix(TokenService.TOKEN_PREFIX);
-        // token 有效期（单位：秒），默认2天，-1代表永不过期
-        config.setTimeout(2 * 24 * 60 * 60);
+        config.setTokenPrefix(AuthConstants.TOKEN_PREFIX);
+        // token 有效期（单位：秒），默认3天，-1代表永不过期
+        config.setTimeout(60 * 60 * 24 * 3);
         // token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
-        config.setActiveTimeout(-1);
+        config.setActiveTimeout(60 * 60 * 8);
         // 是否允许同一账号多地同时登录（为 false 时新登录挤掉旧登录）
         config.setIsConcurrent(true);
         // 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token，为 false 时每次登录新建一个 token）
@@ -67,7 +69,7 @@ public class SaTokenConfigure {
 
     // Sa-Token 整合 jwt https://sa-token.cc/doc.html#/plugin/jwt-extend
     @Bean
-    @ConditionalOnProperty(value = "custom.auth.session.type", havingValue = "jwt")
+    @ConditionalOnProperty(value = "custom.auth.token-type", havingValue = "jwt")
     public StpLogic getStpLogicJwt() {
         // 仅Token风格替换，仍然需要Redis
         return new StpLogicJwtForSimple();
@@ -90,7 +92,20 @@ public class SaTokenConfigure {
                 // 放行路由
                 .addExclude(whiteList.toArray(new String[0]))
                 // 认证函数: 每次请求执行
-                .setAuth(obj -> StpUtil.checkLogin())
+                .setAuth(obj -> {
+                    StpUtil.checkLogin();
+                    // SaStorage 为请求作用域，存储的数据只在一次请求内有效。
+                    SaStorage storage = SaHolder.getStorage();
+                    // 向上下文中设置已认证用户.(避免覆盖)
+                    if (ObjectUtil.isEmpty(storage.get(AuthConstants.LOGIN_USER))) {
+                        // 从会话中获取登陆用户信息
+                        LoginUser loginUser = (LoginUser) StpUtil.getTokenSession().get(AuthConstants.LOGIN_USER);
+                        // 处理数据范围
+                        dataScopeHandler(loginUser);
+                        // loginUser放入本次请求作用域存储
+                        storage.set(AuthConstants.LOGIN_USER, loginUser);
+                    }
+                })
 
                 // 异常处理函数：过滤器中抛出的异常无法进入全局@ExceptionHandler
                 .setError(e -> {
@@ -105,6 +120,8 @@ public class SaTokenConfigure {
                 .setBeforeAuth(r -> {
                     // ---------- 设置一些安全响应头 ----------
                     SaHolder.getResponse()
+                            // 是否可以在iframe显示： DENY=不可以 | SAMEORIGIN=同域下可以 | ALLOW-FROM uri=指定域名下可以
+                            //.setHeader("X-Frame-Options", "SAMEORIGIN") // 不设置标识允许iframe嵌套
                             // 是否启用浏览器默认XSS防护： 0=禁用 | 1=启用 | 1; mode=block 启用, 并在检查到XSS攻击时，停止渲染页面
                             .setHeader("X-XSS-Protection", "1; mode=block")
                             // 禁用浏览器内容嗅探
@@ -130,9 +147,20 @@ public class SaTokenConfigure {
         // 记录日志
         String ip = ServletUtil.getClientIP(request);
         if (ObjectUtil.isNotEmpty(ip)) {
-            log.info("From Ip:{}, User-Agent:{}", ip, ServletUtil.getHeaderIgnoreCase(request, "User-Agent"));
+            log.info("Filter层，From Ip:{}, User-Agent:{}", ip, ServletUtil.getHeaderIgnoreCase(request, "User-Agent"));
         }
         log.info("Filter层，未认证访问{}，处理返回:{}", request.getRequestURI(), responseBody);
         return responseBody;
+    }
+
+    private void dataScopeHandler(LoginUser loginUser) {
+        // 获取原始请求对象
+        HttpServletRequest request = (HttpServletRequest) SaHolder.getRequest().getSource();
+        String apiUrl = request.getServletPath();
+        LoginUser.DataScopeInfo dataScopeInfo = loginUser.getDataScopeMap().get(apiUrl);
+        if (dataScopeInfo != null) {
+            loginUser.setDataScope(dataScopeInfo.getDataScope());
+            loginUser.setScopeSet(dataScopeInfo.getScopeSet());
+        }
     }
 }

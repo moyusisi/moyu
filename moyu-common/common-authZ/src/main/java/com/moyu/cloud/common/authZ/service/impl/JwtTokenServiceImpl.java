@@ -2,6 +2,7 @@ package com.moyu.cloud.common.authZ.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.stp.parameter.SaLoginParameter;
+import com.moyu.cloud.common.authZ.constant.AuthConstants;
 import com.moyu.cloud.common.authZ.model.LoginUser;
 import com.moyu.cloud.common.authZ.service.TokenService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
  * @since 2025-11-11
  */
 @Service
-@ConditionalOnProperty(value = "custom.auth.session.type", havingValue = "jwt")
+@ConditionalOnProperty(value = "custom.auth.token-type", havingValue = "jwt")
 public class JwtTokenServiceImpl implements TokenService {
 
     @Override
@@ -29,7 +30,7 @@ public class JwtTokenServiceImpl implements TokenService {
         // 账户相关的信息缓存到Account-Session中(Simple模式才支持session)
         StpUtil.getSession().set("name", loginUser.getName());
         // 将登录用户信息缓存到Token-Session中
-        StpUtil.getTokenSession().set("loginUser", loginUser);
+        StpUtil.getTokenSession().set(AuthConstants.LOGIN_USER, loginUser);
         return StpUtil.getTokenInfo().getTokenValue();
     }
 
@@ -38,7 +39,11 @@ public class JwtTokenServiceImpl implements TokenService {
         // 账户相关的信息缓存到Account-Session中(Simple模式才支持session)
         StpUtil.getSession().set("name", loginUser.getName());
         // 将登录用户信息缓存到Token-Session中
-        StpUtil.getTokenSession().set("loginUser", loginUser);
+        StpUtil.getTokenSession().set(AuthConstants.LOGIN_USER, loginUser);
     }
 
+    @Override
+    public void invalidateToken(String token) {
+        StpUtil.logoutByTokenValue(token);
+    }
 }
