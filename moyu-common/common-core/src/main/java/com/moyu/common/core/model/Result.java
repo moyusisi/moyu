@@ -1,7 +1,7 @@
-package com.moyu.cloud.common.core.model;
+package com.moyu.common.core.model;
 
-import com.moyu.cloud.common.core.enums.ResultCode;
-import com.moyu.cloud.common.core.enums.ResultCodeEnum;
+import com.moyu.common.core.enums.ResultCode;
+import com.moyu.common.core.enums.ResultCodeEnum;
 
 import java.io.Serializable;
 import java.util.StringJoiner;

@@ -1,6 +1,6 @@
-package com.moyu.cloud.common.core.config;
+package com.moyu.common.core.config;
 
-import com.moyu.cloud.common.core.aop.LogAspect;
+import com.moyu.common.core.aop.LogAspect;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

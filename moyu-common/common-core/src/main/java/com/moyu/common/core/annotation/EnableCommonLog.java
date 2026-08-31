@@ -1,6 +1,6 @@
-package com.moyu.cloud.common.core.annotation;
+package com.moyu.common.core.annotation;
 
-import com.moyu.cloud.common.core.config.CommonLogConfig;
+import com.moyu.common.core.config.CommonLogConfig;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;

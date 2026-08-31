@@ -3,7 +3,7 @@ package com.moyu.boot.plugin.inboxMessage.service;
 import com.moyu.boot.plugin.inboxMessage.model.entity.UserMessage;
 import com.moyu.boot.plugin.inboxMessage.model.param.InboxMessageParam;
 import com.moyu.boot.plugin.inboxMessage.model.vo.UserMessageVO;
-import com.moyu.cloud.common.core.model.PageData;
+import com.moyu.common.core.model.PageData;
 import com.mybatisflex.core.service.IService;
 
 import java.util.List;

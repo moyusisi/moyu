@@ -1,7 +1,7 @@
 package com.moyu.boot.plugin.authSession.model.param;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.moyu.cloud.common.core.model.PageParam;
+import com.moyu.common.core.model.PageParam;
 import lombok.Data;
 
 import java.util.Set;

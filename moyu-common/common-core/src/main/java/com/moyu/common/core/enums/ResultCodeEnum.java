@@ -1,4 +1,4 @@
-package com.moyu.cloud.common.core.enums;
+package com.moyu.common.core.enums;
 
 import java.io.Serializable;
 import java.util.StringJoiner;

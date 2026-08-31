@@ -1,4 +1,4 @@
-package com.moyu.cloud.common.core.model;
+package com.moyu.common.core.model;
 
 import lombok.Data;
 

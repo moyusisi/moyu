@@ -1,4 +1,4 @@
-package com.moyu.cloud.common.core.enums;
+package com.moyu.common.core.enums;
 
 import lombok.Getter;
 

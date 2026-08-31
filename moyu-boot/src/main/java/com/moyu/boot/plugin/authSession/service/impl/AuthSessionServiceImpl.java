@@ -12,7 +12,7 @@ import com.moyu.boot.plugin.authSession.model.vo.AuthSessionAnalysisVO;
 import com.moyu.boot.plugin.authSession.model.vo.AuthSessionVO;
 import com.moyu.boot.plugin.authSession.model.vo.SignTokenVO;
 import com.moyu.boot.plugin.authSession.service.AuthSessionService;
-import com.moyu.cloud.common.core.model.PageData;
+import com.moyu.common.core.model.PageData;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;

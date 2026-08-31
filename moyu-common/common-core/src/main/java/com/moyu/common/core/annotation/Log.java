@@ -1,4 +1,4 @@
-package com.moyu.cloud.common.core.annotation;
+package com.moyu.common.core.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

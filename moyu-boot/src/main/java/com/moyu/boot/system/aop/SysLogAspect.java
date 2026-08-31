@@ -56,7 +56,7 @@ public class SysLogAspect {
     /**
      * 切点
      */
-    @Pointcut("@annotation(com.moyu.cloud.common.core.annotation.SysLog)")
+    @Pointcut("@annotation(com.moyu.common.core.annotation.SysLog)")
     public void logPointcut() {
     }
 
@@ -66,7 +66,7 @@ public class SysLogAspect {
      * @param joinPoint 切点
      */
     @Around("logPointcut() && @annotation(logAnnotation)")
-    public Object logHandler(ProceedingJoinPoint joinPoint, com.moyu.cloud.common.core.annotation.SysLog logAnnotation) throws Throwable {
+    public Object logHandler(ProceedingJoinPoint joinPoint, com.moyu.common.core.annotation.SysLog logAnnotation) throws Throwable {
         // 先从上下文中获取当前用户，防止被清理(可能为空)
         String username = LoginUserUtils.getUsername();
         Object result = null;
@@ -87,7 +87,7 @@ public class SysLogAspect {
         return result;
     }
 
-    private void saveLog(final JoinPoint joinPoint, com.moyu.cloud.common.core.annotation.SysLog logAnnotation, Object result, final Exception e, String username, long start) throws Exception {
+    private void saveLog(final JoinPoint joinPoint, com.moyu.common.core.annotation.SysLog logAnnotation, Object result, final Exception e, String username, long start) throws Exception {
         SysLog sysLog = new SysLog();
         // 操作人
         sysLog.setCreateBy(username);

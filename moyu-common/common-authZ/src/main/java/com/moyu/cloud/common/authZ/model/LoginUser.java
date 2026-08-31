@@ -1,5 +1,6 @@
 package com.moyu.cloud.common.authZ.model;
 
+import com.moyu.common.core.enums.DataScopeEnum;
 import lombok.*;
 
 import java.io.Serializable;
@@ -74,7 +75,7 @@ public class LoginUser implements Serializable {
         /**
          * 数据权限(字典 0无限制 1仅本人数据 2仅本机构 3本机构及以下 4本公司及以下 5自定义)
          *
-         * @see com.moyu.cloud.common.core.enums.DataScopeEnum
+         * @see DataScopeEnum
          */
         private Integer dataScope;
 

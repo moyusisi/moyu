@@ -2,7 +2,7 @@ package com.moyu.boot.system.model.param;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.moyu.cloud.common.core.model.PageParam;
+import com.moyu.common.core.model.PageParam;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

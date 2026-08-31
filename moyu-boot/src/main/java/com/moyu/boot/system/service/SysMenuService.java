@@ -4,7 +4,7 @@ import cn.hutool.core.lang.tree.Tree;
 import com.moyu.boot.system.model.entity.SysMenu;
 import com.moyu.boot.system.model.param.SysMenuParam;
 import com.moyu.boot.system.model.vo.SysMenuVO;
-import com.moyu.cloud.common.core.model.PageData;
+import com.moyu.common.core.model.PageData;
 import com.mybatisflex.core.service.IService;
 
 import java.util.List;

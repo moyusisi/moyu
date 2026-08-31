@@ -9,8 +9,8 @@ import com.moyu.boot.system.model.entity.SysUser;
 import com.moyu.boot.system.service.PasswordEncoder;
 import com.moyu.cloud.common.authZ.model.LoginUser;
 import com.moyu.cloud.common.authZ.service.TokenService;
-import com.moyu.cloud.common.core.enums.ResultCodeEnum;
-import com.moyu.cloud.common.core.exception.BusinessException;
+import com.moyu.common.core.enums.ResultCodeEnum;
+import com.moyu.common.core.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

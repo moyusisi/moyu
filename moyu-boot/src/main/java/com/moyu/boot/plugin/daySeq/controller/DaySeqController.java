@@ -2,8 +2,8 @@ package com.moyu.boot.plugin.daySeq.controller;
 
 import com.moyu.boot.plugin.daySeq.model.vo.DaySeqVO;
 import com.moyu.boot.plugin.daySeq.service.DaySeqService;
-import com.moyu.cloud.common.core.annotation.Log;
-import com.moyu.cloud.common.core.model.Result;
+import com.moyu.common.core.annotation.Log;
+import com.moyu.common.core.model.Result;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

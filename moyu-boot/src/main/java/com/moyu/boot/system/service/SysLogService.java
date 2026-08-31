@@ -3,7 +3,7 @@ package com.moyu.boot.system.service;
 import com.moyu.boot.system.model.entity.SysLog;
 import com.moyu.boot.system.model.param.SysLogParam;
 import com.moyu.boot.system.model.vo.SysLogVO;
-import com.moyu.cloud.common.core.model.PageData;
+import com.moyu.common.core.model.PageData;
 import com.mybatisflex.core.service.IService;
 
 import java.util.List;

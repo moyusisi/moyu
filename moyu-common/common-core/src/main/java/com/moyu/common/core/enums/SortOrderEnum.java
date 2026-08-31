@@ -1,6 +1,6 @@
-package com.moyu.cloud.common.core.enums;
+package com.moyu.common.core.enums;
 
-import com.moyu.cloud.common.core.exception.BusinessException;
+import com.moyu.common.core.exception.BusinessException;
 import lombok.Getter;
 
 /**

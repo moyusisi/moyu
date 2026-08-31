@@ -7,7 +7,7 @@ import com.moyu.boot.system.model.vo.PermScopeInfo;
 import com.moyu.boot.system.model.vo.SysRoleVO;
 import com.moyu.boot.system.model.vo.SysUserVO;
 import com.moyu.cloud.common.authZ.model.LoginUser;
-import com.moyu.cloud.common.core.model.PageData;
+import com.moyu.common.core.model.PageData;
 import com.mybatisflex.core.service.IService;
 
 import java.util.List;

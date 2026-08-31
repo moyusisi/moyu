@@ -1,7 +1,7 @@
-package com.moyu.cloud.common.core.aop;
+package com.moyu.common.core.aop;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.moyu.cloud.common.core.annotation.Log;
+import com.moyu.common.core.annotation.Log;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;

@@ -2,7 +2,7 @@ package com.moyu.boot.system.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.moyu.boot.system.enums.OrgTypeEnum;
-import com.moyu.cloud.common.core.model.BaseEntity;
+import com.moyu.common.core.model.BaseEntity;
 import com.moyu.cloud.common.mybatis.handler.CustomInsertListener;
 import com.moyu.cloud.common.mybatis.handler.CustomUpdateListener;
 import com.mybatisflex.annotation.Column;
