@@ -6,7 +6,7 @@ import com.moyu.boot.system.model.param.SysRoleParam;
 import com.moyu.boot.system.model.vo.PermScopeInfo;
 import com.moyu.boot.system.model.vo.SysRoleVO;
 import com.moyu.boot.system.model.vo.SysUserVO;
-import com.moyu.cloud.common.authZ.model.LoginUser;
+import com.moyu.common.authZ.model.LoginUser;
 import com.moyu.common.core.model.PageData;
 import com.mybatisflex.core.service.IService;
 

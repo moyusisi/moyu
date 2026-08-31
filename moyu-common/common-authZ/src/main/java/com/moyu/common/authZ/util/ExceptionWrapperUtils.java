@@ -1,4 +1,4 @@
-package com.moyu.cloud.common.authZ.util;
+package com.moyu.common.authZ.util;
 
 import cn.dev33.satoken.exception.NotLoginException;
 import com.moyu.common.core.enums.ResultCodeEnum;

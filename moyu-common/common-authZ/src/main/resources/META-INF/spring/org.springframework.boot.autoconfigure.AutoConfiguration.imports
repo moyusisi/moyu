@@ -1,5 +1,5 @@
-com.moyu.cloud.common.authZ.config.AuthProperties
-com.moyu.cloud.common.authZ.config.SaTokenConfigure
-com.moyu.cloud.common.authZ.service.impl.StpInterfaceImpl
-com.moyu.cloud.common.authZ.service.impl.RedisTokenServiceImpl
-com.moyu.cloud.common.authZ.service.impl.JwtTokenServiceImpl
+com.moyu.common.authZ.config.AuthProperties
+com.moyu.common.authZ.config.SaTokenConfigure
+com.moyu.common.authZ.service.impl.StpInterfaceImpl
+com.moyu.common.authZ.service.impl.RedisTokenServiceImpl
+com.moyu.common.authZ.service.impl.JwtTokenServiceImpl

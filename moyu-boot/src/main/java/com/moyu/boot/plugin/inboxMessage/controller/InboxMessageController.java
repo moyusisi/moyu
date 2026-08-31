@@ -7,7 +7,7 @@ import com.moyu.boot.plugin.inboxMessage.model.param.InboxMessageParam;
 import com.moyu.boot.plugin.inboxMessage.model.vo.InboxMessageVO;
 import com.moyu.boot.plugin.inboxMessage.model.vo.UserMessageVO;
 import com.moyu.boot.plugin.inboxMessage.service.InboxMessageService;
-import com.moyu.cloud.common.authZ.util.LoginUserUtils;
+import com.moyu.common.authZ.util.LoginUserUtils;
 import com.moyu.common.core.annotation.Log;
 import com.moyu.common.core.model.PageData;
 import com.moyu.common.core.model.Result;

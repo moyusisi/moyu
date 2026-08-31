@@ -1,4 +1,4 @@
-package com.moyu.cloud.common.authZ.config;
+package com.moyu.common.authZ.config;
 
 import lombok.Getter;
 import lombok.Setter;

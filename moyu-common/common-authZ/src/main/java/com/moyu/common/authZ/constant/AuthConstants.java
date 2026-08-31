@@ -1,4 +1,4 @@
-package com.moyu.cloud.common.authZ.constant;
+package com.moyu.common.authZ.constant;
 
 /**
  * 认证鉴权相关常量

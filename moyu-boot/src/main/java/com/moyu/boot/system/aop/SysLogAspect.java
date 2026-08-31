@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moyu.boot.system.model.entity.SysLog;
 import com.moyu.boot.system.service.SysLogService;
 import com.moyu.boot.system.util.IpUtils;
-import com.moyu.cloud.common.authZ.util.LoginUserUtils;
+import com.moyu.common.authZ.util.LoginUserUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;

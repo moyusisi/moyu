@@ -1,8 +1,8 @@
-package com.moyu.cloud.common.authZ.util;
+package com.moyu.common.authZ.util;
 
 import cn.dev33.satoken.context.SaHolder;
-import com.moyu.cloud.common.authZ.constant.AuthConstants;
-import com.moyu.cloud.common.authZ.model.LoginUser;
+import com.moyu.common.authZ.constant.AuthConstants;
+import com.moyu.common.authZ.model.LoginUser;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashSet;

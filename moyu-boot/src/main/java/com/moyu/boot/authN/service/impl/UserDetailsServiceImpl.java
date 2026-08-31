@@ -5,7 +5,7 @@ import com.moyu.boot.system.model.entity.SysUser;
 import com.moyu.boot.system.service.SysGroupService;
 import com.moyu.boot.system.service.SysRoleService;
 import com.moyu.boot.system.service.SysUserService;
-import com.moyu.cloud.common.authZ.model.LoginUser;
+import com.moyu.common.authZ.model.LoginUser;
 import com.moyu.common.core.enums.DataScopeEnum;
 import com.moyu.common.core.enums.ResultCodeEnum;
 import com.moyu.common.core.exception.BusinessException;

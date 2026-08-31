@@ -7,7 +7,7 @@ import cn.dev33.satoken.exception.NotRoleException;
 import cn.dev33.satoken.exception.SaTokenException;
 import cn.dev33.satoken.sign.exception.SaSignException;
 import cn.hutool.json.JSONUtil;
-import com.moyu.cloud.common.authZ.util.ExceptionWrapperUtils;
+import com.moyu.common.authZ.util.ExceptionWrapperUtils;
 import com.moyu.common.core.enums.ResultCodeEnum;
 import com.moyu.common.core.exception.BusinessException;
 import com.moyu.common.core.model.Result;

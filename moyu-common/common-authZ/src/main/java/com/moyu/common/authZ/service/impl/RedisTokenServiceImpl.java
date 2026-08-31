@@ -1,10 +1,10 @@
-package com.moyu.cloud.common.authZ.service.impl;
+package com.moyu.common.authZ.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.stp.parameter.SaLoginParameter;
-import com.moyu.cloud.common.authZ.constant.AuthConstants;
-import com.moyu.cloud.common.authZ.model.LoginUser;
-import com.moyu.cloud.common.authZ.service.TokenService;
+import com.moyu.common.authZ.constant.AuthConstants;
+import com.moyu.common.authZ.model.LoginUser;
+import com.moyu.common.authZ.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;

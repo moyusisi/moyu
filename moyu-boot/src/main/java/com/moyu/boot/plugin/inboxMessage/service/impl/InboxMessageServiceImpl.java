@@ -15,7 +15,7 @@ import com.moyu.boot.plugin.inboxMessage.service.InboxMessageService;
 import com.moyu.boot.plugin.inboxMessage.service.UserMessageService;
 import com.moyu.boot.system.model.entity.SysUser;
 import com.moyu.boot.system.service.SysUserService;
-import com.moyu.cloud.common.authZ.util.LoginUserUtils;
+import com.moyu.common.authZ.util.LoginUserUtils;
 import com.moyu.common.core.enums.ResultCodeEnum;
 import com.moyu.common.core.enums.SortOrderEnum;
 import com.moyu.common.core.exception.BusinessException;

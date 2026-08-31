@@ -7,7 +7,7 @@ import com.moyu.boot.system.model.param.SysRoleParam;
 import com.moyu.boot.system.model.vo.SysRoleVO;
 import com.moyu.boot.system.model.vo.UserInfo;
 import com.moyu.boot.system.service.UserCenterService;
-import com.moyu.cloud.common.authZ.util.LoginUserUtils;
+import com.moyu.common.authZ.util.LoginUserUtils;
 import com.moyu.common.core.annotation.Log;
 import com.moyu.common.core.annotation.SysLog;
 import com.moyu.common.core.model.Result;

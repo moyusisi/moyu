@@ -1,4 +1,4 @@
-package com.moyu.cloud.common.authZ.model;
+package com.moyu.common.authZ.model;
 
 import com.moyu.common.core.enums.DataScopeEnum;
 import lombok.*;

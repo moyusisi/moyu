@@ -20,7 +20,7 @@ import com.moyu.boot.system.model.entity.SysOrg;
 import com.moyu.boot.system.model.param.SysOrgParam;
 import com.moyu.boot.system.model.vo.SysOrgVO;
 import com.moyu.boot.system.service.SysOrgService;
-import com.moyu.cloud.common.authZ.util.LoginUserUtils;
+import com.moyu.common.authZ.util.LoginUserUtils;
 import com.moyu.common.core.enums.ResultCodeEnum;
 import com.moyu.common.core.exception.BusinessException;
 import com.moyu.common.core.model.PageData;

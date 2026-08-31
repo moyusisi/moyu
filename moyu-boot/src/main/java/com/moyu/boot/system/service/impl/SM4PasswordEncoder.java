@@ -2,7 +2,7 @@ package com.moyu.boot.system.service.impl;
 
 import cn.hutool.crypto.SmUtil;
 import com.moyu.boot.system.service.PasswordEncoder;
-import com.moyu.cloud.common.authZ.config.AuthProperties;
+import com.moyu.common.authZ.config.AuthProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;

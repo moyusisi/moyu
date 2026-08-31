@@ -1,6 +1,6 @@
-package com.moyu.cloud.common.authZ.service;
+package com.moyu.common.authZ.service;
 
-import com.moyu.cloud.common.authZ.model.LoginUser;
+import com.moyu.common.authZ.model.LoginUser;
 
 /**
  * 令牌服务，有多种实现

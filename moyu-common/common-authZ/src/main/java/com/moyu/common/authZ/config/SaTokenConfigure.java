@@ -1,4 +1,4 @@
-package com.moyu.cloud.common.authZ.config;
+package com.moyu.common.authZ.config;
 
 import cn.dev33.satoken.config.SaTokenConfig;
 import cn.dev33.satoken.context.SaHolder;
@@ -11,9 +11,9 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.servlet.ServletUtil;
 import com.google.gson.Gson;
-import com.moyu.cloud.common.authZ.constant.AuthConstants;
-import com.moyu.cloud.common.authZ.model.LoginUser;
-import com.moyu.cloud.common.authZ.util.ExceptionWrapperUtils;
+import com.moyu.common.authZ.constant.AuthConstants;
+import com.moyu.common.authZ.model.LoginUser;
+import com.moyu.common.authZ.util.ExceptionWrapperUtils;
 import com.moyu.common.core.enums.ResultCodeEnum;
 import com.moyu.common.core.model.Result;
 import lombok.extern.slf4j.Slf4j;

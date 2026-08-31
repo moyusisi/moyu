@@ -1,7 +1,7 @@
 package com.moyu.boot.authN.service;
 
 import com.moyu.boot.system.model.entity.SysUser;
-import com.moyu.cloud.common.authZ.model.LoginUser;
+import com.moyu.common.authZ.model.LoginUser;
 
 /**
  * 用户信息服务类
