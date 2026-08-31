@@ -1,10 +1,10 @@
 package com.moyu.boot.plugin.ThirdPartyApp.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.moyu.boot.plugin.ThirdPartyApp.model.entity.ThirdPartyApp;
 import com.moyu.boot.plugin.ThirdPartyApp.model.param.ThirdPartyAppParam;
 import com.moyu.boot.plugin.ThirdPartyApp.model.vo.ThirdPartyAppVO;
 import com.moyu.cloud.common.core.model.PageData;
+import com.mybatisflex.core.service.IService;
 
 import java.util.List;
 

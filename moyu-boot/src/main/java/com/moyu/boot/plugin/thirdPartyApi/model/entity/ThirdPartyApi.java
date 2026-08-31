@@ -1,7 +1,12 @@
 package com.moyu.boot.plugin.thirdPartyApi.model.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.moyu.cloud.common.mybatis.handler.CustomInsertListener;
+import com.moyu.cloud.common.mybatis.handler.CustomUpdateListener;
 import com.moyu.cloud.common.core.model.BaseEntity;
+import com.mybatisflex.annotation.Column;
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
+import com.mybatisflex.annotation.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,9 +20,13 @@ import java.util.Date;
  */
 @Getter
 @Setter
-@TableName("third_party_api")
+@Table(value = "third_party_api", onInsert = CustomInsertListener.class, onUpdate = CustomUpdateListener.class)
 public class ThirdPartyApi extends BaseEntity {
-
+    /**
+     * 主键id
+     */
+    @Id(keyType = KeyType.Auto)
+    private Long id;
     /**
      * 三方接口唯一标识
      */
@@ -70,5 +79,9 @@ public class ThirdPartyApi extends BaseEntity {
      * 备注
      */
     private String remark;
-
+    /**
+     * 删除标志（0未删除  1已删除）
+     */
+    @Column(isLogicDelete = true)
+    private Integer deleted;
 }
