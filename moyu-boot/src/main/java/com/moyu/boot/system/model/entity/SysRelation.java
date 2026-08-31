@@ -1,0 +1,42 @@
+package com.moyu.boot.system.model.entity;
+
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.moyu.boot.system.enums.RelationTypeEnum;
+import com.moyu.boot.system.model.entity.ext.RelationExt;
+import com.moyu.cloud.common.core.model.BaseEntity;
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * 用户角色权限关系表
+ *
+ * @TableName sys_relation
+ */
+@Getter
+@Setter
+@TableName(value = "sys_relation")
+public class SysRelation extends BaseEntity {
+    /**
+     * 对象ID
+     */
+    private String objectId;
+
+    /**
+     * 目标ID
+     */
+    private String targetId;
+
+    /**
+     * 关系类型(字典 1:user_has_role, 2:role_has_perm, 3:user_has_group, 4:group_has_role, 5:scope_has_user)
+     *
+     * @see RelationTypeEnum
+     */
+    private Integer relationType;
+
+    /**
+     * 扩展信息
+     *
+     * @see RelationExt
+     */
+    private String extJson;
+}

@@ -1,0 +1,56 @@
+package com.moyu.boot.plugin.ThirdPartyApp.service;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.moyu.boot.plugin.ThirdPartyApp.model.entity.ThirdPartyApp;
+import com.moyu.boot.plugin.ThirdPartyApp.model.param.ThirdPartyAppParam;
+import com.moyu.boot.plugin.ThirdPartyApp.model.vo.ThirdPartyAppVO;
+import com.moyu.cloud.common.core.model.PageData;
+
+import java.util.List;
+
+/**
+ * 三方应用服务类Service
+ *
+ * @author moyusisi
+ * @since 2026-08-17
+ */
+public interface ThirdPartyAppService extends IService<ThirdPartyApp> {
+
+    /**
+     * 获取记录列表(不分页，通过条件自行控制数量)
+     */
+    List<ThirdPartyAppVO> list(ThirdPartyAppParam param);
+
+    /**
+     * 分页获取记录列表
+     */
+    PageData<ThirdPartyAppVO> pageList(ThirdPartyAppParam param);
+
+    /**
+     * 获取记录详情(通过主键或唯一键)
+     */
+    ThirdPartyAppVO detail(ThirdPartyAppParam param);
+
+    /**
+     * 添加记录
+     */
+    void add(ThirdPartyAppParam param);
+
+    /**
+     * 修改记录(通过主键id更新)
+     */
+    void update(ThirdPartyAppParam param);
+
+    /**
+     * 通过ids删除记录
+     */
+    void deleteByIds(ThirdPartyAppParam param);
+
+    /**
+     * 检查请求中的签名(仅从 Query / Form 参数中取参验签，不支持 application/json 的请求体字段)
+     * 必须的参数timestamp、nonce、sign 从Header中获取(包括X-Appid)
+     *
+     * @param paramNames 指定参与签名的参数，如不指定则默认为全部参数
+     */
+    void checkSign(String... paramNames);
+}
