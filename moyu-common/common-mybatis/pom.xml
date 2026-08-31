@@ -26,10 +26,11 @@
             <artifactId>common-authZ</artifactId>
             <version>1.0.1-SNAPSHOT</version>
         </dependency>
-        <!-- mybatis-plus分页插件 参考：https://baomidou.com/plugins/pagination/ -->
+        <!-- MyBatis-Flex MyBatis的轻量增强框架 参考 https://mybatis-flex.com/zh/intro/comparison.html -->
         <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-jsqlparser-4.9</artifactId>
+            <groupId>com.mybatis-flex</groupId>
+            <artifactId>mybatis-flex-spring-boot-starter</artifactId>
+            <version>1.11.8</version>
         </dependency>
     </dependencies>
 </project>

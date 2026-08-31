@@ -1,10 +1,11 @@
-## mybatis-plus组件
+## mybatis-flex组件
 
 ### 功能
-* `MyBatis-Plus`基础配置，配置类中添加分页插件配置
 * 数据实体`BaseEntity`公共字段的填充处理功能
-* 提供了数据权限注解`@DataPermission`及注解式的数据权限处理功能
 * 提供了编程式数据权限处理工具
+
+### 说明
+使用`MyBatis-Flex`组件
 
 ### 依赖
 本组件对于`common-authZ`的依赖主要用于数据范围处理
@@ -20,15 +21,11 @@
         <artifactId>common-authZ</artifactId>
         <version>1.0.1-SNAPSHOT</version>
     </dependency>
-    <!-- mybatis-plus 增强CRUD 参考：https://baomidou.com/introduce/ -->
+    <!-- MyBatis-Flex MyBatis的轻量增强框架 参考 https://mybatis-flex.com/zh/intro/comparison.html -->
     <dependency>
-        <groupId>com.baomidou</groupId>
-        <artifactId>mybatis-plus-boot-starter</artifactId>
-    </dependency>
-    <!-- mybatis-plus分页插件 参考：https://baomidou.com/plugins/pagination/ -->
-    <dependency>
-        <groupId>com.baomidou</groupId>
-        <artifactId>mybatis-plus-jsqlparser-4.9</artifactId>
+        <groupId>com.mybatis-flex</groupId>
+        <artifactId>mybatis-flex-spring-boot-starter</artifactId>
+        <version>1.11.8</version>
     </dependency>
 </dependencies>
 ```
