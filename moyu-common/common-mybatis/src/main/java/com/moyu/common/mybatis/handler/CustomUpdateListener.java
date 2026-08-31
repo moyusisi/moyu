@@ -1,4 +1,4 @@
-package com.moyu.cloud.common.mybatis.handler;
+package com.moyu.common.mybatis.handler;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ReflectUtil;

@@ -1,7 +1,7 @@
 package com.moyu.boot.plugin.thirdPartyApi.model.entity;
 
-import com.moyu.cloud.common.mybatis.handler.CustomInsertListener;
-import com.moyu.cloud.common.mybatis.handler.CustomUpdateListener;
+import com.moyu.common.mybatis.handler.CustomInsertListener;
+import com.moyu.common.mybatis.handler.CustomUpdateListener;
 import com.moyu.common.core.model.BaseEntity;
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;

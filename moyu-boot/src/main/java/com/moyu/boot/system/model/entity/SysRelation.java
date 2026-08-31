@@ -1,8 +1,8 @@
 package com.moyu.boot.system.model.entity;
 
 import com.moyu.common.core.model.BaseEntity;
-import com.moyu.cloud.common.mybatis.handler.CustomInsertListener;
-import com.moyu.cloud.common.mybatis.handler.CustomUpdateListener;
+import com.moyu.common.mybatis.handler.CustomInsertListener;
+import com.moyu.common.mybatis.handler.CustomUpdateListener;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;

@@ -1,4 +1,4 @@
-package com.moyu.cloud.common.mybatis.util;
+package com.moyu.common.mybatis.util;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.moyu.common.authZ.util.LoginUserUtils;

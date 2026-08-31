@@ -24,7 +24,7 @@ import com.moyu.common.authZ.util.LoginUserUtils;
 import com.moyu.common.core.enums.ResultCodeEnum;
 import com.moyu.common.core.exception.BusinessException;
 import com.moyu.common.core.model.PageData;
-import com.moyu.cloud.common.mybatis.util.DataScopeHelper;
+import com.moyu.common.mybatis.util.DataScopeHelper;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.update.UpdateChain;
