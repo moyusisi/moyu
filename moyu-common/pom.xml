@@ -19,7 +19,6 @@
         <module>common-core</module>
         <module>common-authZ</module>
         <module>common-mybatis</module>
-        <module>common-web</module>
     </modules>
 
     <properties>
@@ -33,6 +32,14 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- hutool 工具组件 -->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-bom</artifactId>
+                <version>5.8.47</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- mybatis-plus 增强CRUD 参考：https://baomidou.com/introduce/ -->
             <dependency>
                 <groupId>com.baomidou</groupId>
@@ -70,14 +77,6 @@
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-alone-redis</artifactId>
                 <version>${sa-token.version}</version>
-            </dependency>
-            <!-- hutool 工具组件 -->
-            <dependency>
-                <groupId>cn.hutool</groupId>
-                <artifactId>hutool-bom</artifactId>
-                <version>5.8.47</version>
-                <type>pom</type>
-                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
