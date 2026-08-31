@@ -1,10 +1,10 @@
 package com.moyu.boot.system.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.moyu.boot.system.model.entity.SysApi;
 import com.moyu.boot.system.model.param.SysApiParam;
 import com.moyu.boot.system.model.vo.SysApiVO;
 import com.moyu.cloud.common.core.model.PageData;
+import com.mybatisflex.core.service.IService;
 
 import java.util.List;
 

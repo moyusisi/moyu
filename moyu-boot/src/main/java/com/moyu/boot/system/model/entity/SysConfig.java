@@ -1,7 +1,11 @@
 package com.moyu.boot.system.model.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.moyu.cloud.common.core.model.BaseEntity;
+import com.moyu.cloud.common.mybatis.handler.CustomInsertListener;
+import com.moyu.cloud.common.mybatis.handler.CustomUpdateListener;
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
+import com.mybatisflex.annotation.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,9 +17,13 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName("sys_config")
+@Table(value = "sys_config", onInsert = CustomInsertListener.class, onUpdate = CustomUpdateListener.class)
 public class SysConfig extends BaseEntity {
-
+    /**
+     * 主键id
+     */
+    @Id(keyType = KeyType.Auto)
+    private Long id;
     /**
      * 配置项名称
      */
@@ -44,5 +52,9 @@ public class SysConfig extends BaseEntity {
      * 备注
      */
     private String remark;
+    /**
+     * 删除标志（0未删除  1已删除）
+     */
+    private Integer deleted;
 
 }

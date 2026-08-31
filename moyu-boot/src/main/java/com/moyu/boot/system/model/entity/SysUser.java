@@ -1,9 +1,14 @@
 package com.moyu.boot.system.model.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.moyu.cloud.common.core.model.BaseEntity;
+import com.moyu.cloud.common.mybatis.handler.CustomInsertListener;
+import com.moyu.cloud.common.mybatis.handler.CustomUpdateListener;
+import com.mybatisflex.annotation.Column;
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
+import com.mybatisflex.annotation.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -11,15 +16,22 @@ import java.time.LocalDate;
 import java.util.Date;
 
 /**
- * 用户信息表
+ * 用户信息表(sys_user)实体对象
  *
- * @TableName sys_user
+ * @author moyusisi
+ * @since 2025-10-22
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName(value = "sys_user")
+@Table(value = "sys_user", onInsert = CustomInsertListener.class, onUpdate = CustomUpdateListener.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SysUser extends BaseEntity {
+
+    /**
+     * 主键id
+     */
+    @Id(keyType = KeyType.Auto)
+    private Long id;
 
     /**
      * 用户唯一标识
@@ -136,6 +148,12 @@ public class SysUser extends BaseEntity {
      * 状态（0正常 1停用）
      */
     private Integer status;
+
+    /**
+     * 删除标志（0未删除  1已删除）
+     */
+    @Column(isLogicDelete = true)
+    private Integer deleted;
 
     /**
      * 备注

@@ -1,21 +1,30 @@
 package com.moyu.boot.system.model.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.moyu.boot.system.enums.RelationTypeEnum;
-import com.moyu.boot.system.model.entity.ext.RelationExt;
 import com.moyu.cloud.common.core.model.BaseEntity;
+import com.moyu.cloud.common.mybatis.handler.CustomInsertListener;
+import com.moyu.cloud.common.mybatis.handler.CustomUpdateListener;
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
+import com.mybatisflex.annotation.Table;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 用户角色权限关系表
+ * 用户角色权限关系表(sys_relation)实体对象
  *
- * @TableName sys_relation
+ * @author moyusisi
+ * @since 2025-10-22
  */
 @Getter
 @Setter
-@TableName(value = "sys_relation")
+@Table(value = "sys_relation", onInsert = CustomInsertListener.class, onUpdate = CustomUpdateListener.class)
 public class SysRelation extends BaseEntity {
+    /**
+     * 主键id
+     */
+    @Id(keyType = KeyType.Auto)
+    private Long id;
+
     /**
      * 对象ID
      */
@@ -29,14 +38,14 @@ public class SysRelation extends BaseEntity {
     /**
      * 关系类型(字典 1:user_has_role, 2:role_has_perm, 3:user_has_group, 4:group_has_role, 5:scope_has_user)
      *
-     * @see RelationTypeEnum
+     * @see com.moyu.boot.system.enums.RelationTypeEnum
      */
     private Integer relationType;
 
     /**
      * 扩展信息
      *
-     * @see RelationExt
+     * @see com.moyu.boot.system.model.entity.ext.RelationExt
      */
     private String extJson;
 }

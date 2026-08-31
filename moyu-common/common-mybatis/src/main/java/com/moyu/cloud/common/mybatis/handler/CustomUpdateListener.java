@@ -2,8 +2,8 @@ package com.moyu.cloud.common.mybatis.handler;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ReflectUtil;
-import com.moyu.boot.common.authZ.util.LoginUserUtils;
-import com.moyu.boot.common.core.model.BaseEntity;
+import com.moyu.cloud.common.authZ.util.LoginUserUtils;
+import com.moyu.cloud.common.core.model.BaseEntity;
 import com.mybatisflex.annotation.UpdateListener;
 
 import java.util.Date;

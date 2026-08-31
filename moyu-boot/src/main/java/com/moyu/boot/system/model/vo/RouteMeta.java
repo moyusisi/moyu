@@ -2,7 +2,6 @@ package com.moyu.boot.system.model.vo;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.moyu.boot.system.enums.MenuTypeEnum;
 import lombok.Data;
 
 /**
@@ -23,7 +22,7 @@ public class RouteMeta {
     /**
      * 标识路由的类型
      *
-     * @see MenuTypeEnum#name().toLowerCase
+     * @see com.moyu.boot.system.enums.MenuTypeEnum#name().toLowerCase
      */
     private String type;
 

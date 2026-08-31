@@ -10,12 +10,6 @@ import cn.hutool.core.lang.tree.parser.DefaultNodeParser;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
@@ -37,7 +31,6 @@ import com.moyu.boot.system.model.vo.PermScopeInfo;
 import com.moyu.boot.system.model.vo.SysRoleVO;
 import com.moyu.boot.system.model.vo.SysUserVO;
 import com.moyu.boot.system.service.*;
-import com.moyu.cloud.boot.system.service.*;
 import com.moyu.cloud.common.authZ.constant.AuthConstants;
 import com.moyu.cloud.common.authZ.model.LoginUser;
 import com.moyu.cloud.common.authZ.util.LoginUserUtils;
@@ -46,6 +39,9 @@ import com.moyu.cloud.common.core.enums.ResultCodeEnum;
 import com.moyu.cloud.common.core.exception.BusinessException;
 import com.moyu.cloud.common.core.model.BaseEntity;
 import com.moyu.cloud.common.core.model.PageData;
+import com.mybatisflex.core.paginate.Page;
+import com.mybatisflex.core.query.QueryWrapper;
+import com.mybatisflex.spring.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -73,7 +69,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Resource
     private SysMenuService sysMenuService;
-
+    @Resource
+    private SysApiService sysApiService;
     @Resource
     private SysUserService sysUserService;
     @Resource
@@ -82,65 +79,60 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     @Override
     public List<SysRoleVO> list(SysRoleParam param) {
         // 查询条件
-        LambdaQueryWrapper<SysRole> queryWrapper = Wrappers.lambdaQuery(SysRole.class);
+        QueryWrapper queryWrapper = QueryWrapper.create();
         // 指定name查询
-        queryWrapper.like(ObjectUtil.isNotEmpty(param.getName()), SysRole::getName, param.getName());
+        queryWrapper.like(SysRole::getName, param.getName(), ObjectUtil.isNotEmpty(param.getName()));
         // 指定code查询
-        queryWrapper.eq(ObjectUtil.isNotEmpty(param.getCode()), SysRole::getCode, param.getCode());
+        queryWrapper.eq(SysRole::getCode, param.getCode(), ObjectUtil.isNotEmpty(param.getCode()));
         // 指定codeSet集合查询
-        queryWrapper.in(ObjectUtil.isNotEmpty(param.getCodeSet()), SysRole::getCode, param.getCodeSet());
+        queryWrapper.in(SysRole::getCode, param.getCodeSet(), ObjectUtil.isNotEmpty(param.getCodeSet()));
         // 指定指定状态
-        queryWrapper.eq(ObjectUtil.isNotEmpty(param.getStatus()), SysRole::getStatus, param.getStatus());
+        queryWrapper.eq(SysRole::getStatus, param.getStatus(), ObjectUtil.isNotEmpty(param.getStatus()));
         // 非 ROOT 不可见ROOT
-        queryWrapper.ne(!LoginUserUtils.isRoot(), SysRole::getCode, AuthConstants.ROOT_ROLE);
+        queryWrapper.ne(SysRole::getCode, AuthConstants.ROOT_ROLE, !LoginUserUtils.isRoot());
         // 仅查询未删除的
         queryWrapper.eq(SysRole::getDeleted, 0);
         // 排序
-        queryWrapper.orderByAsc(SysRole::getSortNum);
+        queryWrapper.orderBy(SysRole::getSortNum, true);
         // 查询
-        List<SysRole> roleList = this.list(queryWrapper);
-        // 转换为voList
-        List<SysRoleVO> voList = buildSysRoleVOList(roleList);
+        List<SysRoleVO> voList = this.listAs(queryWrapper, SysRoleVO.class);
         return voList;
     }
 
     @Override
     public PageData<SysRoleVO> pageList(SysRoleParam param) {
         // 查询条件
-        LambdaQueryWrapper<SysRole> queryWrapper = Wrappers.lambdaQuery(SysRole.class);
-        // 指定name查询条件
-        queryWrapper.like(ObjectUtil.isNotEmpty(param.getName()), SysRole::getName, param.getName());
-        // 指定code查询条件
-        queryWrapper.eq(ObjectUtil.isNotEmpty(param.getCode()), SysRole::getCode, param.getCode());
-        // 指定codeSet集合
-        queryWrapper.in(ObjectUtil.isNotEmpty(param.getCodeSet()), SysRole::getCode, param.getCodeSet());
+        QueryWrapper queryWrapper = QueryWrapper.create();
+        // 指定name查询
+        queryWrapper.like(SysRole::getName, param.getName(), ObjectUtil.isNotEmpty(param.getName()));
+        // 指定code查询
+        queryWrapper.eq(SysRole::getCode, param.getCode(), ObjectUtil.isNotEmpty(param.getCode()));
+        // 指定codeSet集合查询
+        queryWrapper.in(SysRole::getCode, param.getCodeSet(), ObjectUtil.isNotEmpty(param.getCodeSet()));
         // 指定指定状态
-        queryWrapper.eq(ObjectUtil.isNotEmpty(param.getStatus()), SysRole::getStatus, param.getStatus());
+        queryWrapper.eq(SysRole::getStatus, param.getStatus(), ObjectUtil.isNotEmpty(param.getStatus()));
         // 非 ROOT 不可见ROOT
-        queryWrapper.ne(!LoginUserUtils.isRoot(), SysRole::getCode, AuthConstants.ROOT_ROLE);
+        queryWrapper.ne(SysRole::getCode, AuthConstants.ROOT_ROLE, !LoginUserUtils.isRoot());
         // 仅查询未删除的
         queryWrapper.eq(SysRole::getDeleted, 0);
         // 排序
-        queryWrapper.orderByAsc(SysRole::getSortNum);
+        queryWrapper.orderBy(SysRole::getSortNum, true);
         // 分页查询
-        Page<SysRole> page = new Page<>(param.getPageNum(), param.getPageSize());
-        Page<SysRole> rolePage = this.page(page, queryWrapper);
-        List<SysRoleVO> voList = buildSysRoleVOList(rolePage.getRecords());
-        return new PageData<>(rolePage.getTotal(), voList);
+        Page<SysRoleVO> page = Page.of(param.getPageNum(), param.getPageSize());
+        Page<SysRoleVO> voPage = this.pageAs(page, queryWrapper, SysRoleVO.class);
+        return new PageData<>(voPage.getTotalRow(), voPage.getRecords());
     }
 
     @Override
     public SysRoleVO detail(SysRoleParam roleParam) {
-        LambdaQueryWrapper<SysRole> queryWrapper = new QueryWrapper<SysRole>().checkSqlInjection().lambda()
-                .eq(ObjectUtil.isNotEmpty(roleParam.getId()), SysRole::getId, roleParam.getId())
-                .eq(ObjectUtil.isNotEmpty(roleParam.getCode()), SysRole::getCode, roleParam.getCode());
+        QueryWrapper queryWrapper = QueryWrapper.create();
+        queryWrapper.eq(SysRole::getId, roleParam.getId(), ObjectUtil.isNotEmpty(roleParam.getId()))
+                .eq(SysRole::getCode, roleParam.getCode(), ObjectUtil.isNotEmpty(roleParam.getCode()));
         // id、code均为唯一标识
-        SysRole sysRole = this.getOne(queryWrapper);
-        if (sysRole == null) {
+        SysRoleVO vo = this.getOneAs(queryWrapper, SysRoleVO.class);
+        if (vo == null) {
             throw new BusinessException(ResultCodeEnum.INVALID_PARAMETER_ERROR, "未查到指定数据");
         }
-        // 转换为vo
-        SysRoleVO vo = BeanUtil.copyProperties(sysRole, SysRoleVO.class);
         return vo;
     }
 
@@ -149,7 +141,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         // 若指定了唯一编码code，则必须全局唯一
         if (!Strings.isNullOrEmpty(param.getCode())) {
             // 查询指定code
-            SysRole role = this.getOne(new LambdaQueryWrapper<SysRole>()
+            SysRole role = this.getOne(QueryWrapper.create()
                     .eq(SysRole::getCode, param.getCode())
                     .eq(SysRole::getDeleted, 0));
             if (role != null) {
@@ -172,15 +164,16 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         // 待删除的id集合
         Set<Long> idSet = param.getIds();
         // 删除时先查再删
-        List<SysRole> roleList = this.listByIds(idSet);
-        // 要删除的和查询到的进行比对
-        if (ObjectUtil.notEqual(idSet.size(), roleList.size())) {
+        long count = this.count(QueryWrapper.create().in(SysRole::getId, idSet));
+        // 查到的数量比对
+        if (idSet.size() != count) {
             throw new BusinessException(ResultCodeEnum.INVALID_PARAMETER_ERROR, "删除失败，未查到原数据");
         }
-        // 物理删除
-        //this.removeByIds(idSet);
+        // 物理删除 or 逻辑删除
+        this.removeByIds(idSet);
+        //LogicDeleteManager.execWithoutLogicDelete(() -> this.removeByIds(idSet));
         // 逻辑删除
-        this.update(Wrappers.lambdaUpdate(SysRole.class).in(SysRole::getId, idSet).set(SysRole::getDeleted, 1));
+        //UpdateChain.of(SysRole.class).set(SysRole::getDeleted, 1).where(SysRole::getId).in(idSet).update();
     }
 
     @Override
@@ -209,9 +202,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         // role拥有的资源权限
         Set<String> permSet = sysRelationService.rolePerm(roleSet);
         // 查询所有模块的所有菜单(不含按钮)
-        List<SysMenu> menuList = sysMenuService.list(Wrappers.lambdaQuery(SysMenu.class)
-                .ne(SysMenu::getMenuType, MenuTypeEnum.BUTTON.getCode())
-                .eq(ObjectUtil.isNotEmpty(param.getModule()), SysMenu::getModule, param.getModule()));
+        List<SysMenu> menuList = sysMenuService.list(QueryWrapper.create()
+                .eq(SysMenu::getModule, param.getModule(), ObjectUtil.isNotEmpty(param.getModule()))
+                .ne(SysMenu::getMenuType, MenuTypeEnum.BUTTON.getCode()));
 
         // 过滤出role有权限的菜单转为treeNode
         List<TreeNode<String>> nodeList = new ArrayList<>();
@@ -256,8 +249,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     @Override
     public List<Tree<String>> menuTreeForGrant(SysRoleParam param) {
         // 查询模块所有资源(包括菜单按钮)
-        List<SysMenu> menuList = sysMenuService.list(Wrappers.lambdaQuery(SysMenu.class)
-                .eq(ObjectUtil.isNotEmpty(param.getModule()), SysMenu::getModule, param.getModule()));
+        List<SysMenu> menuList = sysMenuService.list(QueryWrapper.create()
+                .eq(SysMenu::getModule, param.getModule(), ObjectUtil.isNotEmpty(param.getModule())));
 
         // role已经拥有的资源权限
         Set<String> permSet = sysRelationService.rolePerm(param.getCode());
@@ -311,10 +304,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
         // role已经拥有的资源权限 permCode -> Relation
         Map<String, SysRelation> permMap = new HashMap<>();
-        Db.list(Wrappers.lambdaQuery(SysRelation.class)
+        sysRelationService.list(QueryWrapper.create()
                 .eq(SysRelation::getObjectId, param.getCode())
                 .eq(SysRelation::getRelationType, RelationTypeEnum.ROLE_HAS_PERM.getCode())
-                .eq(SysRelation::getDeleted, 0)
         ).forEach(e -> {
             permMap.put(e.getTargetId(), e);
         });
@@ -323,9 +315,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         Map<String, SysMenu> btnMap = new HashMap<>();
         Set<String> btnPermSet = new HashSet<>();
         // 查询模块所有按钮
-        Db.list(Wrappers.lambdaQuery(SysMenu.class)
+        sysMenuService.list(QueryWrapper.create()
                         .eq(SysMenu::getMenuType, MenuTypeEnum.BUTTON.getCode())
-                        .eq(ObjectUtil.isNotEmpty(param.getModule()), SysMenu::getModule, param.getModule())
+                        .eq(SysMenu::getModule, param.getModule(), ObjectUtil.isNotEmpty(param.getModule()))
                 ).stream()
                 // 过滤出role有权限的按钮
                 .filter(btn -> permMap.containsKey(btn.getCode()))
@@ -341,13 +333,13 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         // 按钮关联的接口(必须有数据范围) perm -> SysApi
         Map<String, SysApi> apiMap = new HashMap<>();
         // 查询接口列表
-        Db.list(Wrappers.lambdaQuery(SysApi.class)
+        sysApiService.list(QueryWrapper.create()
                 // 只要有数据范围的接口
                 .eq(SysApi::getHasScope, 1)
                 // 指定name查询
-                .like(ObjectUtil.isNotEmpty(param.getName()), SysApi::getName, param.getName())
+                .like(SysApi::getName, param.getName(), ObjectUtil.isNotEmpty(param.getName()))
                 // 指定path查询
-                .like(ObjectUtil.isNotEmpty(param.getSearchKey()), SysApi::getPath, param.getSearchKey())
+                .like(SysApi::getPath, param.getSearchKey(), ObjectUtil.isNotEmpty(param.getSearchKey()))
                 // 权限标识
                 .in(SysApi::getCode, btnPermSet)
         ).forEach(api -> {
@@ -382,7 +374,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     @Override
     public void grantMenu(SysRoleParam roleParam) {
         // 本模块所有可授权内容(菜单、按钮、链接)
-        List<SysMenu> moduleMenuList = sysMenuService.list(Wrappers.lambdaQuery(SysMenu.class)
+        List<SysMenu> moduleMenuList = sysMenuService.list(QueryWrapper.create()
                 .select(SysMenu::getCode)
                 // 指定模块
                 .eq(SysMenu::getModule, roleParam.getModule())
@@ -416,7 +408,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
             // 移除本次删除的权限
             if (ObjectUtil.isNotEmpty(toDeleteSet)) {
-                sysRelationService.remove(Wrappers.lambdaQuery(SysRelation.class)
+                sysRelationService.remove(QueryWrapper.create()
                         .eq(SysRelation::getObjectId, roleParam.getCode())
                         .in(SysRelation::getTargetId, toDeleteSet));
             }
@@ -447,7 +439,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         Map<String, PermScopeInfo> scopeMap = new HashMap<>();
         permScopeList.forEach(e -> scopeMap.put(e.getCode(), e));
         // 查询角色在本模块的已有权限(role+permCodeSet)
-        List<SysRelation> relationList = sysRelationService.list(Wrappers.lambdaQuery(SysRelation.class)
+        List<SysRelation> relationList = sysRelationService.list(QueryWrapper.create()
                 .eq(SysRelation::getRelationType, RelationTypeEnum.ROLE_HAS_PERM.getCode())
                 .eq(SysRelation::getObjectId, param.getCode())
                 .in(SysRelation::getTargetId, scopeMap.keySet()));
@@ -475,7 +467,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
             relation.setUpdateBy(null);
             relation.setUpdateTime(date);
         });
-        sysRelationService.updateBatchById(relationList);
+        sysRelationService.updateBatch(relationList);
     }
 
     @Override
@@ -514,14 +506,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         if (ObjectUtil.isEmpty(userSet)) {
             return;
         }
-        // 要删除的ids
-        Set<Long> ids = new HashSet<>();
         // 查询指定role中已存在的user，加入ids待删
-        Db.list(Wrappers.lambdaQuery(SysRelation.class)
+        List<Long> ids = sysRelationService.objListAs(QueryWrapper.create().select(SysRelation::getId)
                 .eq(SysRelation::getRelationType, RelationTypeEnum.USER_HAS_ROLE.getCode())
                 .in(SysRelation::getObjectId, userSet)
-                .eq(SysRelation::getTargetId, roleParam.getCode())
-        ).forEach(e -> ids.add(e.getId()));
+                .eq(SysRelation::getTargetId, roleParam.getCode()), Long.class);
         // 物理删除
         if (ObjectUtil.isNotEmpty(ids)) {
             sysRelationService.removeByIds(ids);
@@ -564,15 +553,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         if (ObjectUtil.isEmpty(menuSet)) {
             return permSet;
         }
-        // 获取资源上的权限标识
-        sysMenuService.list(Wrappers.lambdaQuery(SysMenu.class)
+        // 获取menu上的权限标识
+        List<String> permList = this.objListAs(QueryWrapper.create().select(SysMenu::getPermission)
                 .eq(SysMenu::getMenuType, MenuTypeEnum.BUTTON.getCode())
-                .in(SysMenu::getCode, menuSet)).forEach(e -> {
-            if (ObjectUtil.isNotEmpty(e.getPermission())) {
-                permSet.add(e.getPermission());
-            }
-        });
-        return permSet;
+                .in(SysMenu::getCode, menuSet), String.class);
+        return new HashSet<>(permList);
     }
 
     @Override
@@ -584,7 +569,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         }
         // roleSet拥有的Relation(包含了菜单+按钮): permCode->SysRelation
         Map<String, SysRelation> allPermMap = new HashMap<>();
-        Db.list(Wrappers.lambdaQuery(SysRelation.class)
+        sysRelationService.list(QueryWrapper.create()
                 .eq(SysRelation::getRelationType, RelationTypeEnum.ROLE_HAS_PERM.getCode())
                 .in(SysRelation::getObjectId, roleSet)
         ).forEach(e -> allPermMap.put(e.getTargetId(), e));
@@ -595,7 +580,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         Map<String, SysMenu> btnMap = new HashMap<>();
         Set<String> btnPermSet = new HashSet<>();
         // 查询模块所有按钮
-        Db.list(Wrappers.lambdaQuery(SysMenu.class)
+        sysMenuService.list(QueryWrapper.create()
                 .eq(SysMenu::getMenuType, MenuTypeEnum.BUTTON.getCode())
                 .in(SysMenu::getCode, allPermMap.keySet())
                 .eq(SysMenu::getDeleted, 0)
@@ -611,7 +596,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         // 按钮关联的接口(必须有数据范围)Map:perm -> SysApi
         Map<String, SysApi> apiMap = new HashMap<>();
         // 查询接口列表
-        Db.list(Wrappers.lambdaQuery(SysApi.class)
+        sysApiService.list(QueryWrapper.create()
                 // 只要有数据范围的接口
                 .eq(SysApi::getHasScope, 1)
                 // 权限标识
@@ -702,21 +687,6 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
             scopeSet.addAll(ObjectUtil.defaultIfNull(scopeExt.getScopeList(), new ArrayList<>()));
         }
         return info;
-    }
-
-    /**
-     * 实体对象生成展示对象 entityList -> voList
-     */
-    private List<SysRoleVO> buildSysRoleVOList(List<SysRole> entityList) {
-        List<SysRoleVO> voList = new ArrayList<>();
-        if (CollectionUtils.isEmpty(entityList)) {
-            return voList;
-        }
-        for (SysRole entity : entityList) {
-            SysRoleVO vo = BeanUtil.copyProperties(entity, SysRoleVO.class);
-            voList.add(vo);
-        }
-        return voList;
     }
 }
 

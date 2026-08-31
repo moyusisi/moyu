@@ -8,8 +8,6 @@ import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.lang.tree.parser.DefaultNodeParser;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
@@ -26,13 +24,13 @@ import com.moyu.boot.system.model.vo.RouteMeta;
 import com.moyu.boot.system.model.vo.SysRoleVO;
 import com.moyu.boot.system.model.vo.UserInfo;
 import com.moyu.boot.system.service.*;
-import com.moyu.cloud.boot.system.service.*;
 import com.moyu.cloud.common.authZ.model.LoginUser;
 import com.moyu.cloud.common.authZ.service.TokenService;
 import com.moyu.cloud.common.authZ.util.LoginUserUtils;
 import com.moyu.cloud.common.core.enums.DataScopeEnum;
 import com.moyu.cloud.common.core.enums.ResultCodeEnum;
 import com.moyu.cloud.common.core.exception.BusinessException;
+import com.mybatisflex.core.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -51,6 +49,9 @@ public class UserCenterServiceImpl implements UserCenterService {
 
     @Resource
     private SysUserService sysUserService;
+
+    @Resource
+    private SysMenuService sysMenuService;
 
     @Resource
     private SysOrgService sysOrgService;
@@ -76,7 +77,7 @@ public class UserCenterServiceImpl implements UserCenterService {
         }
         LoginUser loginUser = optUser.get();
         // 查询用户
-        SysUser user = sysUserService.getOne(Wrappers.lambdaQuery(SysUser.class).eq(SysUser::getAccount, username));
+        SysUser user = sysUserService.getOne(QueryWrapper.create().eq(SysUser::getAccount, username));
         if (user == null) {
             throw new BusinessException(ResultCodeEnum.INVALID_PARAMETER_ERROR, "未查到指定数据");
         }
@@ -121,11 +122,11 @@ public class UserCenterServiceImpl implements UserCenterService {
             return Lists.newArrayList();
         }
         // 查询所有的菜单(不含按钮)
-        List<SysMenu> menuList = Db.list(Wrappers.lambdaQuery(SysMenu.class)
+        List<SysMenu> menuList = sysMenuService.list(QueryWrapper.create()
                 // 不能是按钮
                 .ne(SysMenu::getMenuType, MenuTypeEnum.BUTTON.getCode())
                 .eq(SysMenu::getDeleted, 0)
-                .orderByAsc(SysMenu::getSortNum)
+                .orderBy(SysMenu::getSortNum, true)
         );
         // 用户有权限的菜单(不含按钮) + 所有模块、目录
         List<SysMenu> userMenuList = CollectionUtil.newArrayList();
@@ -194,7 +195,7 @@ public class UserCenterServiceImpl implements UserCenterService {
             roleSet = sysRoleService.userRoles(username);
         } else {
             // 通过唯一标识code查询group
-            group = sysGroupService.getOne(Wrappers.lambdaQuery(SysGroup.class).eq(SysGroup::getCode, groupCode).eq(SysGroup::getDeleted, 0));
+            group = sysGroupService.getOne(QueryWrapper.create().eq(SysGroup::getCode, groupCode).eq(SysGroup::getDeleted, 0));
             if (group == null) {
                 throw new BusinessException(ResultCodeEnum.INVALID_PARAMETER_ERROR, "切换失败，未查到岗位数据");
             }

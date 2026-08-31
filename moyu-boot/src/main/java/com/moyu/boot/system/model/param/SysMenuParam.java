@@ -2,7 +2,6 @@ package com.moyu.boot.system.model.param;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.moyu.boot.system.enums.MenuTypeEnum;
 import com.moyu.cloud.common.core.model.PageParam;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,11 +42,6 @@ public class SysMenuParam extends PageParam {
      */
     private String roleCode;
 
-    /**
-     * 名称关键词
-     */
-    private String searchKey;
-
     //********** db中存在的字段 **********//
     /**
      * 主键id
@@ -73,7 +67,7 @@ public class SysMenuParam extends PageParam {
     /**
      * 菜单类型（字典 1模块 2目录 3菜单 4内链 5外链 6按钮）
      *
-     * @see MenuTypeEnum
+     * @see com.moyu.boot.system.enums.MenuTypeEnum
      */
     @NotNull(message = "菜单类型menuType不能为空")
     @Min(value = 1, message = "菜单类型menuType有效取值范围为[1,5]")

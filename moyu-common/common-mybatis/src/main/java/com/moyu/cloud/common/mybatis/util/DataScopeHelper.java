@@ -1,8 +1,8 @@
 package com.moyu.cloud.common.mybatis.util;
 
 import cn.hutool.core.util.ObjectUtil;
-import com.moyu.boot.common.authZ.util.LoginUserUtils;
-import com.moyu.boot.common.core.enums.DataScopeEnum;
+import com.moyu.cloud.common.authZ.util.LoginUserUtils;
+import com.moyu.cloud.common.core.enums.DataScopeEnum;
 import com.mybatisflex.core.util.LambdaGetter;
 import lombok.extern.slf4j.Slf4j;
 

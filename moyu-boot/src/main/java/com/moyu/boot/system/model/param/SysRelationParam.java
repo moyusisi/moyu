@@ -1,7 +1,6 @@
 package com.moyu.boot.system.model.param;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.moyu.boot.system.enums.RelationTypeEnum;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,7 +50,7 @@ public class SysRelationParam {
     /**
      * 关系类型(字典 1:user_has_role, 2:role_has_perm, 3:user_has_group, 4:group_has_role, 5:scope_has_user)
      *
-     * @see RelationTypeEnum
+     * @see com.moyu.boot.system.enums.RelationTypeEnum
      */
     private Integer relationType;
 

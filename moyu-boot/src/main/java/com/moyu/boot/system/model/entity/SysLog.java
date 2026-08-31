@@ -1,6 +1,11 @@
 package com.moyu.boot.system.model.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.moyu.cloud.common.mybatis.handler.CustomInsertListener;
+import com.moyu.cloud.common.mybatis.handler.CustomUpdateListener;
+import com.mybatisflex.annotation.Column;
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
+import com.mybatisflex.annotation.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,13 +19,12 @@ import java.util.Date;
  */
 @Getter
 @Setter
-@TableName("sys_log")
+@Table(value = "sys_log", onInsert = CustomInsertListener.class, onUpdate = CustomUpdateListener.class)
 public class SysLog {
-
     /**
      * 主键id
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @Id(keyType = KeyType.Auto)
     private Long id;
     /**
      * 日志名称
@@ -90,20 +94,19 @@ public class SysLog {
 
     /**
      * 删除标志（0未删除  1已删除）
+     * isLogicDelete逻辑删除标记 deleteById时会更新,查询时会过滤
      */
-    @TableField(fill = FieldFill.INSERT)
+    @Column(isLogicDelete = true)
     private Integer deleted;
 
     /**
      * 创建时间
      */
-    @TableField(fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 创建人
      */
-    @TableField(fill = FieldFill.INSERT)
     private String createBy;
 
 }
