@@ -10,7 +10,7 @@
         <version>2.7.18</version>
     </parent>
 
-    <groupId>com.moyu.cloud</groupId>
+    <groupId>com.moyu</groupId>
     <artifactId>moyu-common</artifactId>
     <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>

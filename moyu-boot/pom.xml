@@ -26,13 +26,13 @@
         <!-- 本工程的其它模块 -->
         <!-- common-authZ -->
         <dependency>
-            <groupId>com.moyu.cloud</groupId>
+            <groupId>com.moyu</groupId>
             <artifactId>common-authZ</artifactId>
             <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <!-- common-mybatis -->
         <dependency>
-            <groupId>com.moyu.cloud</groupId>
+            <groupId>com.moyu</groupId>
             <artifactId>common-mybatis</artifactId>
             <version>1.0.1-SNAPSHOT</version>
         </dependency>
