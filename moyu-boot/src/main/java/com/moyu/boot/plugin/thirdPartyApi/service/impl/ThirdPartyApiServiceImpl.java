@@ -9,7 +9,7 @@ import com.dtflys.forest.http.ForestResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.moyu.boot.common.authZ.util.LoginUserUtils;
+import com.moyu.common.authZ.util.LoginUserUtils;
 import com.moyu.boot.plugin.thirdPartyApi.mapper.ThirdPartyApiMapper;
 import com.moyu.boot.plugin.thirdPartyApi.model.entity.ThirdPartyApi;
 import com.moyu.boot.plugin.thirdPartyApi.model.param.ThirdPartyApiParam;
