@@ -31,7 +31,7 @@
 ```
 
 ### 使用
-在SpringBoot项目的配置文件，正常添加数据源配置、mybatis-plus配置即可
+在SpringBoot项目的配置文件，正常添加数据源配置、mybatis-flex配置即可
 
 ```yaml
 # spring配置
@@ -44,12 +44,13 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
 
-# MyBatis Plus配置 参考：https://baomidou.com/reference/
-mybatis-plus:
-  # 别名包扫描路径，用于给包中的类注册别名。注册后可以直接使用类名，无需使用全限定类名。
-  type-aliases-package: com.moyu.system.sys.entity
+# MyBatis-Flex配置 参考：https://mybatis-flex.com/zh/base/configuration.html
+mybatis-flex:
   # 配置mapper的扫描，如果在 Mapper 中有自定义方法，需要配置此项。 默认值：["classpath*:/mapper/**/*.xml"]
   mapper-locations: classpath*:mapper/**/*.xml
   # 加载全局的配置文件
 #  config-location: classpath:mybatis-config.xml
+  global-config:
+    # 关闭控制台输出banner
+    print-banner: false
 ```
