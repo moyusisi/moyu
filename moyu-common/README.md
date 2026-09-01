@@ -8,4 +8,6 @@
 ./mvnw clean install -N
 # 安装指定模块
 ./mvnw clean install -pl common-core
+# 安装指定模块
+./mvnw clean install -pl common-authZ
 ```
