@@ -27,7 +27,7 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <sa-token.version>1.46.0</sa-token.version>
+        <hutool.version>5.8.47</hutool.version>
     </properties>
 
     <dependencyManagement>
@@ -36,47 +36,9 @@
             <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-bom</artifactId>
-                <version>5.8.47</version>
+                <version>${hutool.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <!-- mybatis-plus 增强CRUD 参考：https://baomidou.com/introduce/ -->
-            <dependency>
-                <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-bom</artifactId>
-                <version>3.5.15</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <!-- Sa-Token 权限认证，在线文档：https://sa-token.cc -->
-            <dependency>
-                <groupId>cn.dev33</groupId>
-                <artifactId>sa-token-spring-boot-starter</artifactId>
-                <version>${sa-token.version}</version>
-            </dependency>
-            <!-- Sa-Token 整合 SpringAOP 实现注解鉴权 -->
-            <dependency>
-                <groupId>cn.dev33</groupId>
-                <artifactId>sa-token-spring-aop</artifactId>
-                <version>${sa-token.version}</version>
-            </dependency>
-            <!-- Sa-Token 整合 jwt -->
-            <dependency>
-                <groupId>cn.dev33</groupId>
-                <artifactId>sa-token-jwt</artifactId>
-                <version>${sa-token.version}</version>
-            </dependency>
-            <!-- Sa-Token 整合 RedisTemplate -->
-            <dependency>
-                <groupId>cn.dev33</groupId>
-                <artifactId>sa-token-redis-template</artifactId>
-                <version>${sa-token.version}</version>
-            </dependency>
-            <!-- Sa-Token插件：权限缓存与业务缓存分离(即多个redis缓存) -->
-            <dependency>
-                <groupId>cn.dev33</groupId>
-                <artifactId>sa-token-alone-redis</artifactId>
-                <version>${sa-token.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
