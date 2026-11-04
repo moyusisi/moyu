@@ -36,6 +36,7 @@ import com.moyu.common.authZ.model.LoginUser;
 import com.moyu.common.authZ.util.LoginUserUtils;
 import com.moyu.common.core.enums.DataScopeEnum;
 import com.moyu.common.core.enums.ResultCodeEnum;
+import com.moyu.common.core.enums.SortOrderEnum;
 import com.moyu.common.core.exception.BusinessException;
 import com.moyu.common.core.model.BaseEntity;
 import com.moyu.common.core.model.PageData;
@@ -93,7 +94,13 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         // 仅查询未删除的
         queryWrapper.eq(SysRole::getDeleted, 0);
         // 排序
-        queryWrapper.orderBy(SysRole::getSortNum, true);
+        if (ObjectUtil.isAllNotEmpty(param.getSortField(), param.getSortOrder())) {
+            // 检查排序方式
+            SortOrderEnum.validate(param.getSortOrder());
+            queryWrapper.orderBy(StrUtil.toUnderlineCase(param.getSortField()), param.getSortOrder().equals(SortOrderEnum.ASC.getValue()));
+        } else {
+            queryWrapper.orderBy(SysRole::getSortNum, true);
+        }
         // 查询
         List<SysRoleVO> voList = this.listAs(queryWrapper, SysRoleVO.class);
         return voList;
@@ -116,7 +123,13 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         // 仅查询未删除的
         queryWrapper.eq(SysRole::getDeleted, 0);
         // 排序
-        queryWrapper.orderBy(SysRole::getSortNum, true);
+        if (ObjectUtil.isAllNotEmpty(param.getSortField(), param.getSortOrder())) {
+            // 检查排序方式
+            SortOrderEnum.validate(param.getSortOrder());
+            queryWrapper.orderBy(StrUtil.toUnderlineCase(param.getSortField()), param.getSortOrder().equals(SortOrderEnum.ASC.getValue()));
+        } else {
+            queryWrapper.orderBy(SysRole::getSortNum, true);
+        }
         // 分页查询
         Page<SysRoleVO> page = Page.of(param.getPageNum(), param.getPageSize());
         Page<SysRoleVO> voPage = this.pageAs(page, queryWrapper, SysRoleVO.class);
@@ -153,8 +166,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         role.setId(null);
         // 若未指定唯一编码code，则自动生成
         if (Strings.isNullOrEmpty(role.getCode())) {
-            // 唯一code RandomUtil.randomString(10)、IdUtil.objectId()24位、IdUtil.getSnowflakeNextId()19位
-            role.setCode(SysConstants.ROLE_PREFIX + IdUtil.objectId());
+            // 唯一code IdUtil.objectId()24位、IdUtil.getSnowflakeNextId()19位
+            role.setCode(SysConstants.ROLE_PREFIX + IdUtil.getSnowflakeNextId());
         }
         this.save(role);
     }
@@ -554,39 +567,50 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
             return permSet;
         }
         // 获取menu上的权限标识
-        List<String> permList = this.objListAs(QueryWrapper.create().select(SysMenu::getPermission)
-                .eq(SysMenu::getMenuType, MenuTypeEnum.BUTTON.getCode())
+        List<String> permList = sysMenuService.objListAs(QueryWrapper.create().select(SysMenu::getPermission)
+                .isNotNull(SysMenu::getPermission)
                 .in(SysMenu::getCode, menuSet), String.class);
+        // 移除empty
+        permList.removeIf(StrUtil::isBlank);
         return new HashSet<>(permList);
     }
 
     @Override
     public Map<String, LoginUser.DataScopeInfo> roleDataScopeMap(Set<String> roleSet, String orgCode) {
-        // 权限标识集合
+        // 权限标识集合 <url, dataScope>
         Map<String, LoginUser.DataScopeInfo> apiScopeMap = new HashMap<>();
         if (ObjectUtil.isEmpty(roleSet)) {
             return apiScopeMap;
         }
-        // roleSet拥有的Relation(包含了菜单+按钮): permCode->SysRelation
-        Map<String, SysRelation> allPermMap = new HashMap<>();
-        sysRelationService.list(QueryWrapper.create()
+        // roleSet拥有的所有Relation(包含了菜单+按钮)
+        List<SysRelation> relationList = sysRelationService.list(QueryWrapper.create()
                 .eq(SysRelation::getRelationType, RelationTypeEnum.ROLE_HAS_PERM.getCode())
+                .isNotNull(SysRelation::getExtJson)
                 .in(SysRelation::getObjectId, roleSet)
-        ).forEach(e -> allPermMap.put(e.getTargetId(), e));
-        if (ObjectUtil.isEmpty(allPermMap)) {
+        );
+        // 过滤出 有数据权限 的关系
+        List<SysRelation> hasScopeList = new ArrayList<>();
+        Set<String> hasScopeCodeSet = new HashSet<>();
+        relationList.forEach(e -> {
+            if (!StrUtil.isEmpty(e.getExtJson())) {
+                hasScopeCodeSet.add(e.getTargetId());
+                hasScopeList.add(e);
+            }
+        });
+        if (ObjectUtil.isEmpty(hasScopeCodeSet)) {
             return apiScopeMap;
         }
-        // roleSet拥有的所有按钮 code -> SysResource
+
+        // roleSet拥有的所有按钮 code -> SysMenu
         Map<String, SysMenu> btnMap = new HashMap<>();
-        Set<String> btnPermSet = new HashSet<>();
-        // 查询模块所有按钮
+        Set<String> permSet = new HashSet<>();
+        // 查询模块所有按钮(包括菜单，支持菜单直接加权限标识)
         sysMenuService.list(QueryWrapper.create()
-                .eq(SysMenu::getMenuType, MenuTypeEnum.BUTTON.getCode())
-                .in(SysMenu::getCode, allPermMap.keySet())
+                .in(SysMenu::getCode, hasScopeCodeSet)
                 .eq(SysMenu::getDeleted, 0)
-        ).forEach(btn -> {
-            btnMap.put(btn.getCode(), btn);
-            btnPermSet.add(btn.getPermission());
+        ).forEach(menu -> {
+            btnMap.put(menu.getCode(), menu);
+            permSet.add(menu.getPermission());
         });
         // role无按钮则返回
         if (CollectionUtils.isEmpty(btnMap)) {
@@ -600,20 +624,21 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
                 // 只要有数据范围的接口
                 .eq(SysApi::getHasScope, 1)
                 // 权限标识
-                .in(SysApi::getCode, btnPermSet)
+                .in(SysApi::getCode, permSet)
         ).forEach(api -> {
             apiMap.put(api.getCode(), api);
         });
 
         Gson gson = new GsonBuilder().create();
         // 接口数据范围组装
-        btnMap.forEach((code, btn) -> {
-            SysApi api = apiMap.get(btn.getPermission());
-            if (api != null) {
-                // 不同btn可能有不同数据范围
-                SysRelation relation = allPermMap.get(btn.getCode());
-                RelationExt.ScopeExt scopeExt = gson.fromJson(relation.getExtJson(), RelationExt.ScopeExt.class);
-                if (scopeExt != null && scopeExt.getDataScope() != null) {
+        hasScopeList.forEach(relation -> {
+            String extJson = relation.getExtJson();
+            // 不同关系可能有不同数据范围
+            RelationExt.ScopeExt scopeExt = gson.fromJson(extJson, RelationExt.ScopeExt.class);
+            SysMenu btn = btnMap.get(relation.getTargetId());
+            if (btn != null) {
+                SysApi api = apiMap.get(btn.getPermission());
+                if (api != null && scopeExt != null && scopeExt.getDataScope() != null) {
                     LoginUser.DataScopeInfo info = buildDataScopeInfo(orgCode, scopeExt);
                     if (apiScopeMap.containsKey(api.getPath())) {
                         // 已有重复的，则要合并数据范围

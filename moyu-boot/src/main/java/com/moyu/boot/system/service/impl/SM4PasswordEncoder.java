@@ -1,8 +1,8 @@
 package com.moyu.boot.system.service.impl;
 
 import cn.hutool.crypto.SmUtil;
+import com.moyu.boot.system.config.SysProperties;
 import com.moyu.boot.system.service.PasswordEncoder;
-import com.moyu.common.authZ.config.AuthProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -19,11 +19,11 @@ import java.util.Objects;
  */
 @Slf4j
 @Service
-@ConditionalOnProperty(value = "custom.auth.crypto-type", havingValue = "sm4", matchIfMissing = true)
+@ConditionalOnProperty(value = "custom.sys.crypto-type", havingValue = "sm4", matchIfMissing = true)
 public class SM4PasswordEncoder implements PasswordEncoder {
 
     @Resource
-    private AuthProperties properties;
+    private SysProperties properties;
 
     @Override
     public String encode(CharSequence rawPassword) {

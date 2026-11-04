@@ -9,6 +9,7 @@ import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.lang.tree.parser.DefaultNodeParser;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
@@ -22,6 +23,7 @@ import com.moyu.boot.system.model.vo.SysOrgVO;
 import com.moyu.boot.system.service.SysOrgService;
 import com.moyu.common.authZ.util.LoginUserUtils;
 import com.moyu.common.core.enums.ResultCodeEnum;
+import com.moyu.common.core.enums.SortOrderEnum;
 import com.moyu.common.core.exception.BusinessException;
 import com.moyu.common.core.model.PageData;
 import com.moyu.common.mybatis.util.DataScopeHelper;
@@ -54,10 +56,17 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     @Override
     public List<SysOrgVO> list(SysOrgParam param) {
         String parentCode = param.getParentCode();
+        // 指定orgCode的所有的children，包含本身
+        List<String> children = new ArrayList<>();
+        if (StrUtil.isNotBlank(param.getParentCode())) {
+            children = childrenCodeList(parentCode);
+        }
         // 查询条件
         QueryWrapper queryWrapper = QueryWrapper.create();
         // 指定parentCode查询(包括本身和直接子节点)
-        queryWrapper.and(qw -> qw.where(SysOrg::getCode).eq(parentCode).or(SysOrg::getParentCode).eq(parentCode), ObjectUtil.isNotEmpty(parentCode));
+        // queryWrapper.and(qw -> qw.where(SysOrg::getCode).eq(parentCode).or(SysOrg::getParentCode).eq(parentCode), ObjectUtil.isNotEmpty(parentCode));
+        // 指定parentCode查询(包括本身和所有子节点)
+        queryWrapper.in(SysOrg::getCode, children, ObjectUtil.isNotEmpty(param.getParentCode()));
         // 指定name查询
         queryWrapper.like(SysOrg::getName, param.getName(), ObjectUtil.isNotEmpty(param.getName()));
         // 指定code查询
@@ -71,7 +80,13 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         // 仅查询未删除的
         queryWrapper.eq(SysOrg::getDeleted, 0);
         // 指定排序
-        queryWrapper.orderBy(SysOrg::getSortNum, true);
+        if (ObjectUtil.isAllNotEmpty(param.getSortField(), param.getSortOrder())) {
+            // 检查排序方式
+            SortOrderEnum.validate(param.getSortOrder());
+            queryWrapper.orderBy(StrUtil.toUnderlineCase(param.getSortField()), param.getSortOrder().equals(SortOrderEnum.ASC.getValue()));
+        } else {
+            queryWrapper.orderBy(SysOrg::getSortNum, true);
+        }
         // 查询
         List<SysOrgVO> voList = this.listAs(queryWrapper, SysOrgVO.class);
         return voList;
@@ -83,10 +98,17 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     @Override
     public PageData<SysOrgVO> pageList(SysOrgParam param) {
         String parentCode = param.getParentCode();
+        // 指定orgCode的所有的children，包含本身
+        List<String> children = new ArrayList<>();
+        if (StrUtil.isNotBlank(param.getParentCode())) {
+            children = childrenCodeList(parentCode);
+        }
         // 查询条件
         QueryWrapper queryWrapper = QueryWrapper.create();
         // 指定parentCode查询(包括本身和直接子节点)
-        queryWrapper.and(qw -> qw.where(SysOrg::getCode).eq(parentCode).or(SysOrg::getParentCode).eq(parentCode), ObjectUtil.isNotEmpty(parentCode));
+        // queryWrapper.and(qw -> qw.where(SysOrg::getCode).eq(parentCode).or(SysOrg::getParentCode).eq(parentCode), ObjectUtil.isNotEmpty(parentCode));
+        // 指定parentCode查询(包括本身和所有子节点)
+        queryWrapper.in(SysOrg::getCode, children, ObjectUtil.isNotEmpty(param.getParentCode()));
         // 指定name查询
         queryWrapper.like(SysOrg::getName, param.getName(), ObjectUtil.isNotEmpty(param.getName()));
         // 指定code查询
@@ -100,7 +122,13 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         // 仅查询未删除的
         queryWrapper.eq(SysOrg::getDeleted, 0);
         // 指定排序
-        queryWrapper.orderBy(SysOrg::getSortNum, true);
+        if (ObjectUtil.isAllNotEmpty(param.getSortField(), param.getSortOrder())) {
+            // 检查排序方式
+            SortOrderEnum.validate(param.getSortOrder());
+            queryWrapper.orderBy(StrUtil.toUnderlineCase(param.getSortField()), param.getSortOrder().equals(SortOrderEnum.ASC.getValue()));
+        } else {
+            queryWrapper.orderBy(SysOrg::getSortNum, true);
+        }
         // 非ROOT则限制数据权限
         DataScopeHelper.dataScopeFilter(queryWrapper, SysOrg::getName, SysOrg::getCode);
         DataScopeHelper.dataScopeFilter(com.mybatisflex.core.query.QueryWrapper.create(), SysOrg::getName, SysOrg::getCode);
@@ -138,8 +166,8 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         org.setId(null);
         // 若未指定唯一编码code，则自动生成
         if (Strings.isNullOrEmpty(org.getCode())) {
-            // 唯一code RandomUtil.randomString(10)、IdUtil.objectId()24位
-            org.setCode(IdUtil.objectId());
+            // 唯一code IdUtil.objectId()24位、IdUtil.getSnowflakeNextId()19位
+            org.setCode(SysConstants.ORG_PREFIX + IdUtil.getSnowflakeNextId());
         }
         // 组织机构层级路径,逗号分隔,父节点在后(不包含本节点)
         Tree<String> rootTree = singleTree();

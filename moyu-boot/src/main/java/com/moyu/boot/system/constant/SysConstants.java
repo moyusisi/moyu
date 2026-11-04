@@ -30,8 +30,8 @@ public interface SysConstants {
     String DEFAULT_PASSWORD = "qwer@123!";
 
     // 自动生成code时的前缀
+    String ORG_PREFIX = "O";
     String GROUP_PREFIX = "G";
-    String SCOPE_PREFIX = "S";
     String ROLE_PREFIX = "R";
 
     /**

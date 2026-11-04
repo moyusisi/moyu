@@ -41,10 +41,6 @@ public class SysGroupVO {
      */
     private String orgName;
     /**
-     * 组织机构层级路径,逗号分隔,父节点在后
-     */
-    private String orgPath;
-    /**
      * 排序顺序
      */
     private Integer sortNum;
@@ -63,7 +59,7 @@ public class SysGroupVO {
     /**
      * 创建时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date createTime;
     /**
      * 创建人
@@ -72,7 +68,7 @@ public class SysGroupVO {
     /**
      * 修改时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
     /**
      * 修改人

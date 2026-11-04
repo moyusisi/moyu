@@ -41,10 +41,6 @@ public class SysApiVO {
      */
     private Integer hasScope;
     /**
-     * 接口类型（字典 1后端接口 2三方接口）
-     */
-    private Integer apiType;
-    /**
      * 扩展信息
      */
     private String extJson;
@@ -55,7 +51,7 @@ public class SysApiVO {
     /**
      * 创建时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date createTime;
     /**
      * 创建人
@@ -64,7 +60,7 @@ public class SysApiVO {
     /**
      * 修改时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
     /**
      * 修改人

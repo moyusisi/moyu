@@ -159,11 +159,11 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
         // 查询
         List<SysConfig> list = this.list(queryWrapper);
 
-        // 清空缓存中的数据
-        redisTemplate.delete(SYS_CONFIG_REDIS_KEY);
-
         if (list != null) {
             Map<String, String> map = list.stream().collect(Collectors.toMap(SysConfig::getConfigKey, SysConfig::getConfigValue));
+            // 清空缓存中的数据
+            redisTemplate.delete(SYS_CONFIG_REDIS_KEY);
+            // 写入缓存
             redisTemplate.opsForHash().putAll(SYS_CONFIG_REDIS_KEY, map);
         }
     }
@@ -175,6 +175,16 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
             return StrUtil.toStringOrNull(objValue);
         }
         return null;
+    }
+
+    @Override
+    public String getValueWithCache(String configKey) {
+        String value = getCacheValue(configKey);
+        if (value == null) {
+            refreshCache();
+            value = getCacheValue(configKey);
+        }
+        return value;
     }
 
 }

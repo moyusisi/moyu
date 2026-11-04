@@ -6,7 +6,7 @@ import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.google.common.base.Strings;
-import com.moyu.boot.plugin.daySeq.service.DaySeqService;
+import com.moyu.boot.plugin.seq.service.DaySnService;
 import com.moyu.boot.system.constant.SysConstants;
 import com.moyu.boot.system.mapper.SysUserMapper;
 import com.moyu.boot.system.model.entity.SysUser;
@@ -17,6 +17,7 @@ import com.moyu.boot.system.service.SysConfigService;
 import com.moyu.boot.system.service.SysOrgService;
 import com.moyu.boot.system.service.SysUserService;
 import com.moyu.common.core.enums.ResultCodeEnum;
+import com.moyu.common.core.enums.SortOrderEnum;
 import com.moyu.common.core.exception.BusinessException;
 import com.moyu.common.core.model.BaseEntity;
 import com.moyu.common.core.model.PageData;
@@ -53,7 +54,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private SysConfigService sysConfigService;
 
     @Resource
-    private DaySeqService daySeqService;
+    private DaySnService daySnService;
 
     @Override
     public List<SysUserVO> list(SysUserParam param) {
@@ -80,6 +81,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         queryWrapper.eq(SysUser::getStatus, param.getStatus(), ObjectUtil.isNotEmpty(param.getStatus()));
         // 仅查询未删除的
         queryWrapper.eq(SysUser::getDeleted, 0);
+        if (ObjectUtil.isAllNotEmpty(param.getSortField(), param.getSortOrder())) {
+            // 检查排序方式
+            SortOrderEnum.validate(param.getSortOrder());
+            queryWrapper.orderBy(StrUtil.toUnderlineCase(param.getSortField()), param.getSortOrder().equals(SortOrderEnum.ASC.getValue()));
+        }
         // 查询
         List<SysUserVO> voList = this.listAs(queryWrapper, SysUserVO.class);
         return voList;
@@ -108,12 +114,31 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         queryWrapper.eq(SysUser::getStatus, param.getStatus(), ObjectUtil.isNotEmpty(param.getStatus()));
         // 仅查询未删除的
         queryWrapper.eq(SysUser::getDeleted, 0);
+        if (ObjectUtil.isAllNotEmpty(param.getSortField(), param.getSortOrder())) {
+            // 检查排序方式
+            SortOrderEnum.validate(param.getSortOrder());
+            queryWrapper.orderBy(StrUtil.toUnderlineCase(param.getSortField()), param.getSortOrder().equals(SortOrderEnum.ASC.getValue()));
+        }
         // 限制数据权限
         DataScopeHelper.dataScopeFilter(queryWrapper, SysUser::getCreateBy, SysUser::getOrgCode);
         // 分页查询
         Page<SysUserVO> page = Page.of(param.getPageNum(), param.getPageSize());
         Page<SysUserVO> voPage = this.pageAs(page, queryWrapper, SysUserVO.class);
         return new PageData<>(voPage.getTotalRow(), voPage.getRecords());
+    }
+
+    @Override
+    public List<SysUserVO> userSelector(SysUserParam param) {
+        // 查询条件
+        QueryWrapper queryWrapper = QueryWrapper.create();
+        // 仅查询部分字段
+        queryWrapper.select(SysUser::getAccount, SysUser::getName);
+        // 指定account查询
+        queryWrapper.like(SysUser::getAccount, param.getAccount(), ObjectUtil.isNotEmpty(param.getAccount()));
+        // 限制数据权限
+        DataScopeHelper.dataScopeFilter(queryWrapper, SysUser::getAccount, SysUser::getOrgCode);
+        // 查询
+        return this.listAs(queryWrapper, SysUserVO.class);
     }
 
     @Override
@@ -145,7 +170,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser user = BeanUtil.copyProperties(param, SysUser.class);
         user.setId(null);
         // 用户唯一id，202602110001
-        user.setUserId(daySeqService.nextId());
+        user.setUserId(daySnService.nextId());
         // user.setUserId(IdUtil.getSnowflakeNextIdStr());
         // 若指定了直属组织，则设置所属组织
         if (ObjectUtil.isNotEmpty(user.getOrgCode())) {
@@ -160,7 +185,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         // 初始密码为系统默认
         if (ObjectUtil.isEmpty(user.getPassword())) {
-            String defaultPwd = sysConfigService.getCacheValue(SysConstants.Config.DEFAULT_PWD);
+            String defaultPwd = sysConfigService.getValueWithCache(SysConstants.Config.DEFAULT_PWD);
             defaultPwd = StrUtil.emptyToDefault(defaultPwd, SysConstants.DEFAULT_PASSWORD);
             user.setPassword(passwordEncoder.encode(defaultPwd));
         }
