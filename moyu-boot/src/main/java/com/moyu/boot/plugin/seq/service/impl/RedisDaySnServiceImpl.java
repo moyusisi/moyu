@@ -1,8 +1,8 @@
-package com.moyu.boot.plugin.daySeq.service.impl;
+package com.moyu.boot.plugin.seq.service.impl;
 
 import cn.hutool.core.util.StrUtil;
-import com.moyu.boot.plugin.daySeq.model.vo.DaySeqVO;
-import com.moyu.boot.plugin.daySeq.service.DaySeqService;
+import com.moyu.boot.plugin.seq.model.vo.DaySnVO;
+import com.moyu.boot.plugin.seq.service.DaySnService;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -21,9 +21,9 @@ import java.util.concurrent.TimeUnit;
  * @since 2026-01-29
  */
 @Component
-public class RedisDaySeqServiceImpl implements DaySeqService {
+public class RedisDaySnServiceImpl implements DaySnService {
 
-    // 日内序列的缓存key
+    // 日内序列的缓存key前缀
     private static final String INTRADAY_SEQ_REDIS_KEY = "seq:day:";
 
     // 日期格式
@@ -41,9 +41,9 @@ public class RedisDaySeqServiceImpl implements DaySeqService {
     @Override
     public String nextId(Integer size) {
         String today = DTF.format(LocalDate.now());
-        Long seq = generatorId(null, today);
+        Long num = generatorId(null, today);
         // 返回日内标识，格式化补零
-        return today + String.format("%0" + size + "d", seq);
+        return today + String.format("%0" + size + "d", num);
     }
 
     @Override
@@ -55,39 +55,43 @@ public class RedisDaySeqServiceImpl implements DaySeqService {
     @Override
     public String nextId(String prefix, Integer size) {
         String today = DTF.format(LocalDate.now());
-        Long seq = generatorId(prefix, today);
+        Long num = generatorId(prefix, today);
         // 返回带前缀的日内标识，格式化补零
-        return prefix + today + String.format("%0" + size + "d", seq);
+        return prefix + today + String.format("%0" + size + "d", num);
     }
 
     /**
      * 读取当前Id序号
      */
     @Override
-    public String getId(String idKey) {
+    public Long getIdValue(String idKey) {
         if (StrUtil.isEmpty(idKey)) {
             return null;
         }
         // 构造fullKey,格式为: seq:day:idKey
         String fullKey = INTRADAY_SEQ_REDIS_KEY + idKey;
         // 从redis读取值并返回
-        return stringRedisTemplate.opsForValue().get(fullKey);
+        String value = stringRedisTemplate.opsForValue().get(fullKey);
+        if (StrUtil.isEmpty(value)) {
+            return null;
+        }
+        return Long.valueOf(value);
     }
 
     @Override
-    public List<DaySeqVO> list(String keyword) {
-        List<DaySeqVO> voList = new ArrayList<>();
+    public List<DaySnVO> list(String keyword) {
+        List<DaySnVO> voList = new ArrayList<>();
         // 构造模糊匹配表达式：前缀 + * [+ keyword + *]
         String keyPattern = INTRADAY_SEQ_REDIS_KEY + (StrUtil.isBlank(keyword) ? "*" : "*" + keyword + "*");
         // 获取所有匹配前缀的 key 集合（Set 类型，避免重复）
         Set<String> matchKeys = stringRedisTemplate.keys(keyPattern);
         // 遍历匹配到的key并取值
         for (String key : matchKeys) {
-            DaySeqVO vo = new DaySeqVO();
+            DaySnVO vo = new DaySnVO();
             String value = stringRedisTemplate.opsForValue().get(key);
             vo.setIdKey(StrUtil.subAfter(key, INTRADAY_SEQ_REDIS_KEY, false));
             vo.setIdValue(value);
-            vo.setSeq(vo.getIdKey() + String.format("%04d", Long.valueOf(vo.getIdValue())));
+            vo.setSn(vo.getIdKey() + String.format("%04d", Long.valueOf(vo.getIdValue())));
             voList.add(vo);
         }
         return voList;

@@ -9,7 +9,6 @@ import com.dtflys.forest.http.ForestResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.moyu.common.authZ.util.LoginUserUtils;
 import com.moyu.boot.plugin.thirdPartyApi.mapper.ThirdPartyApiMapper;
 import com.moyu.boot.plugin.thirdPartyApi.model.entity.ThirdPartyApi;
 import com.moyu.boot.plugin.thirdPartyApi.model.param.ThirdPartyApiParam;
@@ -25,7 +24,6 @@ import com.moyu.common.core.model.BaseEntity;
 import com.moyu.common.core.model.PageData;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
-import com.mybatisflex.core.row.DbChain;
 import com.mybatisflex.core.update.UpdateChain;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -186,20 +184,14 @@ public class ThirdPartyApiServiceImpl extends ServiceImpl<ThirdPartyApiMapper, T
             bodyMap = gson.fromJson(body, new TypeToken<Map<String, Object>>() {
             }.getType());
         }
+        // 构造请求对象 发送请求
+        ForestResponse<?> response = request(method, url, headerMap, bodyMap);
+
         // 属性复制
         ThirdPartyApi toUpdate = new ThirdPartyApi();
         toUpdate.setId(old.getId());
         toUpdate.setRequestHeader(header);
         toUpdate.setRequestBody(body);
-
-        // 构造请求对象 发送请求
-        ForestResponse<?> response = Forest.request().url(url)
-                .setType(ForestRequestType.findType(method))
-                .contentTypeJson()     // 指定请求体为JSON格式
-                .addHeader(headerMap)
-                .addBody(bodyMap)
-                .executeAsResponse();
-
         toUpdate.setRequestTime(response.getRequestTime());
         toUpdate.setResponseTime(response.getResponseTime());
         // noException() && statusOk()
@@ -254,15 +246,79 @@ public class ThirdPartyApiServiceImpl extends ServiceImpl<ThirdPartyApiMapper, T
         }
 
         // 构造请求对象 发送请求
-        ForestResponse<?> response = Forest.request().url(api.getUrl())
-                .setType(ForestRequestType.findType(api.getRequestMethod()))
-                .contentTypeJson()     // 指定请求体为JSON格式
-                .addHeader(headers)
-                .addBody(params)
-                .executeAsResponse();
+        ForestResponse<?> response = request(api.getRequestMethod(), api.getUrl(), headers, params);
         // 保存日志
         saveLog(api, params, response);
         return response.getContent();
+    }
+
+    @Override
+    public ForestResponse<?> request(String method, String url, Map<String, Object> headers, Map<String, Object> params) {
+        // 构造请求对象 发送请求
+        ForestResponse<?> response;
+        if (ForestRequestType.GET == ForestRequestType.findType(method)) {
+            response = get(url, headers, params);
+        } else {
+            // 默认 post 表单
+            response = postForm(url, headers, params);
+        }
+        return response;
+    }
+
+    @Override
+    public ForestResponse<?> get(String url, Map<String, Object> headers, Map<String, Object> params) {
+        if (StrUtil.isEmpty(url)) {
+            throw new BusinessException(ResultCodeEnum.INVALID_PARAMETER_ERROR, "接口地址不能为空");
+        }
+        // body需要判空
+        if (CollectionUtils.isEmpty(params)) {
+            params = new HashMap<>();
+        }
+        // 构造请求对象 发送请求
+        ForestResponse<?> response = Forest.request().url(url)
+                .setType(ForestRequestType.GET)
+                .addHeader(headers)
+                .addQuery(params)
+                .executeAsResponse();
+        return response;
+    }
+
+    @Override
+    public ForestResponse<?> postForm(String url, Map<String, Object> headers, Map<String, Object> params) {
+        if (StrUtil.isEmpty(url)) {
+            throw new BusinessException(ResultCodeEnum.INVALID_PARAMETER_ERROR, "接口地址不能为空");
+        }
+        // body需要判空
+        if (CollectionUtils.isEmpty(params)) {
+            params = new HashMap<>();
+        }
+        // 构造请求对象 发送请求
+        ForestResponse<?> response = Forest.request().url(url)
+                .setType(ForestRequestType.POST)
+                .contentFormUrlEncoded()
+                .addHeader(headers)
+                .addBody(params)
+                .executeAsResponse();
+        return response;
+    }
+
+    @Override
+    public ForestResponse<?> postJson(String url, Map<String, Object> headers, Map<String, Object> params) {
+        if (StrUtil.isEmpty(url)) {
+            throw new BusinessException(ResultCodeEnum.INVALID_PARAMETER_ERROR, "接口地址不能为空");
+        }
+        // body需要判空
+        if (CollectionUtils.isEmpty(params)) {
+            params = new HashMap<>();
+        }
+        // 构造请求对象 发送请求
+        ForestResponse<?> response = Forest.request().url(url)
+                .setType(ForestRequestType.POST)
+                .contentTypeJson()
+                .addHeader(headers)
+                .addBody(params)
+                .executeAsResponse();
+        return response;
     }
 
     /**
@@ -278,18 +334,14 @@ public class ThirdPartyApiServiceImpl extends ServiceImpl<ThirdPartyApiMapper, T
         sysLog.setRequestContent(gson.toJson(params));
         sysLog.setResponseContent(response.getContent());
         if (StrUtil.isEmpty(sysLog.getResponseContent())) {
-            sysLog.setResponseContent("HTTP状态码:" + response.getStatusCode());
+            sysLog.setResponseContent("HTTP状态码:" + response.getStatusCode() + " " + response.getReasonPhrase());
         }
         sysLog.setStartTime(response.getRequestTime());
         sysLog.setEndTime(response.getResponseTime());
         sysLog.setExecutionTime(response.getTimeAsMillisecond());
 
-        sysLog.setCreateTime(new Date());
-        sysLog.setCreateBy(LoginUserUtils.getUsername());
-
         // 保存记录
-        //sysLogService.save(sysLog);
-        DbChain.create(SysLog.class).save(sysLog);
+        sysLogService.save(sysLog);
     }
 
 }

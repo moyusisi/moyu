@@ -1,7 +1,8 @@
-package com.moyu.boot.plugin.daySeq.controller;
+package com.moyu.boot.plugin.seq.controller;
 
-import com.moyu.boot.plugin.daySeq.model.vo.DaySeqVO;
-import com.moyu.boot.plugin.daySeq.service.DaySeqService;
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.moyu.boot.plugin.seq.model.vo.DaySnVO;
+import com.moyu.boot.plugin.seq.service.DaySnService;
 import com.moyu.common.core.annotation.Log;
 import com.moyu.common.core.model.Result;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,17 +22,17 @@ import java.util.List;
 @Log(jsonLog = true)
 @RestController
 @RequestMapping("/api/seq/day")
-public class DaySeqController {
+public class DaySnController {
 
     @Resource
-    private DaySeqService daySeqService;
+    private DaySnService daySnService;
 
     /**
      * 获取指定key(seq:day:idKey)对应的ID
      */
     @PostMapping("/list")
-    public Result<List<DaySeqVO>> list(@RequestParam(required = false) String keyword) {
-        List<DaySeqVO> list = daySeqService.list(keyword);
+    public Result<List<DaySnVO>> list(@RequestParam(required = false) String idKey) {
+        List<DaySnVO> list = daySnService.list(idKey);
         return Result.success(list);
     }
 
@@ -39,17 +40,18 @@ public class DaySeqController {
      * 获取指定key(seq:day:idKey)对应的ID
      */
     @PostMapping("/currentId")
-    public Result<String> currentId(@RequestParam String idKey) {
-        String sn = daySeqService.getId(idKey);
+    public Result<Long> currentId(@RequestParam String idKey) {
+        Long sn = daySnService.getIdValue(idKey);
         return Result.success(sn);
     }
 
     /**
      * 自增测试接口
      */
+    @SaCheckPermission("dev:seq:inc")
     @PostMapping("/inc")
     public Result<String> inc(@RequestParam String prefix) {
-        String sn = daySeqService.nextId(prefix, 5);
+        String sn = daySnService.nextId(prefix, 5);
         return Result.success(sn);
     }
 }
