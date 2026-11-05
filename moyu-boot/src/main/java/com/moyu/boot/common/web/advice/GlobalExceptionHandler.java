@@ -1,6 +1,5 @@
 package com.moyu.boot.common.web.advice;
 
-
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.exception.NotRoleException;
@@ -12,7 +11,6 @@ import com.moyu.common.core.enums.ResultCodeEnum;
 import com.moyu.common.core.exception.BusinessException;
 import com.moyu.common.core.model.Result;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.connector.ClientAbortException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageConversionException;
@@ -185,15 +183,6 @@ public class GlobalExceptionHandler {
         log.info("异常捕捉处理后返回结果为:{}", JSONUtil.toJsonStr(result));
         return result;
     }
-    // ===================== 容器IO异常 =====================
-
-    /**
-     * 客户端主动断开连接，避免大量ERROR日志刷屏
-     */
-    @ExceptionHandler(ClientAbortException.class)
-    public void handleClientAbort() {
-        log.debug("客户端主动断开TCP连接，无需返回响应");
-    }
 
     /**
      * 非法参数异常
@@ -229,7 +218,7 @@ public class GlobalExceptionHandler {
     public Result<?> noPermissionException(HttpServletRequest request, SaTokenException e) {
         Result<?> result = new Result<>(ResultCodeEnum.ACCESS_UNAUTHORIZED);
         if (e instanceof NotLoginException) {
-            // 处理未登录异常，区分未认证的具体场景
+            // 登陆认证是在Filter层处理的，这里通常走不到
             result = ExceptionWrapperUtils.handleNotLogin((NotLoginException) e);
         }
         log.info("未授权访问：{}", request.getRequestURI());
