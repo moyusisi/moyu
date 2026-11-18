@@ -11,12 +11,12 @@ import com.moyu.common.authZ.util.LoginUserUtils;
 import com.moyu.common.core.annotation.Log;
 import com.moyu.common.core.annotation.SysLog;
 import com.moyu.common.core.model.Result;
+import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**

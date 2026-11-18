@@ -3,7 +3,6 @@ package com.moyu.boot.system.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.tree.Tree;
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
@@ -34,11 +33,11 @@ import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.update.UpdateChain;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -212,7 +211,10 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupMapper, SysGroup> i
             return new ArrayList<>();
         }
         // 查询角色(可指定搜索词)
-        List<SysRoleVO> roleList = sysRoleService.list(SysRoleParam.builder().name(param.getSearchKey()).codeSet(roleSet).build());
+        SysRoleParam queryParam = new SysRoleParam();
+        queryParam.setName(param.getSearchKey());
+        queryParam.setCodeSet(roleSet);
+        List<SysRoleVO> roleList = sysRoleService.list(queryParam);
         return roleList;
     }
 
@@ -224,10 +226,11 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupMapper, SysGroup> i
             return new ArrayList<>();
         }
         // 查询用户(可指定搜索词)
-        List<SysUserVO> voList = sysUserService.list(SysUserParam.builder()
-                .name(param.getSearchKey())
-                .orgCode(param.getOrgCode())
-                .codeSet(userSet).build());
+        SysUserParam queryParam = new SysUserParam();
+        queryParam.setName(param.getSearchKey());
+        queryParam.setOrgCode(param.getOrgCode());
+        queryParam.setCodeSet(userSet);
+        List<SysUserVO> voList = sysUserService.list(queryParam);
         return voList;
     }
 
@@ -298,9 +301,11 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupMapper, SysGroup> i
         // 要删除的ids
         Set<Long> ids = new HashSet<>();
         // 查询指定group中存在的role，加入ids待删
-        sysRelationService.list(SysRelationParam.builder().objectId(param.getCode()).targetSet(param.getCodeSet())
-                .relationType(RelationTypeEnum.GROUP_HAS_ROLE.getCode()).build()
-        ).forEach(e -> ids.add(e.getId()));
+        SysRelationParam queryParam = new SysRelationParam();
+        queryParam.setObjectId(param.getCode());
+        queryParam.setTargetSet(param.getCodeSet());
+        queryParam.setRelationType(RelationTypeEnum.GROUP_HAS_ROLE.getCode());
+        sysRelationService.list(queryParam).forEach(e -> ids.add(e.getId()));
         // 物理删除
         if (ObjectUtil.isNotEmpty(ids)) {
             sysRelationService.removeByIds(ids);
@@ -360,9 +365,11 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupMapper, SysGroup> i
         // 要删除的ids
         Set<Long> ids = new HashSet<>();
         // 查询指定group中存在的user，加入ids待删
-        sysRelationService.list(SysRelationParam.builder().targetId(param.getCode()).objectSet(param.getCodeSet())
-                .relationType(RelationTypeEnum.USER_HAS_GROUP.getCode()).build()
-        ).forEach(e -> ids.add(e.getId()));
+        SysRelationParam queryParam = new SysRelationParam();
+        queryParam.setTargetId(param.getCode());
+        queryParam.setObjectSet(param.getCodeSet());
+        queryParam.setRelationType(RelationTypeEnum.USER_HAS_GROUP.getCode());
+        sysRelationService.list(queryParam).forEach(e -> ids.add(e.getId()));
         // 物理删除
         if (ObjectUtil.isNotEmpty(ids)) {
             sysRelationService.removeByIds(ids);
@@ -375,7 +382,9 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupMapper, SysGroup> i
         Set<String> roleSet = sysRelationService.groupRole(param.getCode());
         // 所有岗位都拥有默认角色
         roleSet.add(sysRoleService.defaultRole());
-        return sysRoleService.menuTree(SysRoleParam.builder().codeSet(roleSet).build());
+        SysRoleParam queryParam = new SysRoleParam();
+        queryParam.setCodeSet(roleSet);
+        return sysRoleService.menuTree(queryParam);
     }
 
     @Override

@@ -7,7 +7,6 @@ import cn.hutool.core.lang.tree.TreeNode;
 import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.lang.tree.parser.DefaultNodeParser;
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
@@ -44,12 +43,12 @@ import com.moyu.common.core.model.PageData;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -366,13 +365,12 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
             SysApi api = apiMap.get(btn.getPermission());
             // apiMap中仅包含有数据范围的接口
             if (ObjectUtil.isNotNull(api)) {
-                PermScopeInfo vo = PermScopeInfo.builder()
-                        .code(code)
-                        .btnName(btn.getName())
-                        .name(api.getName())
-                        .path(api.getPath())
-                        .permission(api.getCode())
-                        .build();
+                PermScopeInfo vo = new PermScopeInfo();
+                vo.setCode(code);
+                vo.setBtnName(btn.getName());
+                vo.setName(api.getName());
+                vo.setPath(api.getPath());
+                vo.setPermission(api.getCode());
                 SysRelation relation = permMap.get(code);
                 RelationExt.ScopeExt ext = gson.fromJson(relation.getExtJson(), RelationExt.ScopeExt.class);
                 if (ext != null) {
@@ -539,10 +537,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
             return new ArrayList<>();
         }
         // 查询用户(可指定搜索词)
-        List<SysUserVO> voList = sysUserService.list(SysUserParam.builder()
-                .name(param.getSearchKey())
-                .orgCode(param.getOrgCode())
-                .codeSet(userSet).build());
+        SysUserParam queryParam = new SysUserParam();
+        queryParam.setName(param.getSearchKey());
+        queryParam.setOrgCode(param.getOrgCode());
+        queryParam.setCodeSet(userSet);
+        List<SysUserVO> voList = sysUserService.list(queryParam);
         return voList;
     }
 
