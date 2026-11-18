@@ -44,7 +44,6 @@ public interface DaySnService {
 
     /**
      * 获取指定key对应的ID的序列值,格式为: seq:day:idKey
-     *
      * @return 序列器对应的值
      */
     Long getIdValue(String idKey);
