@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.18</version>
+        <version>3.5.16</version>
     </parent>
 
     <artifactId>moyu-boot</artifactId>
@@ -15,11 +15,13 @@
     <packaging>jar</packaging>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <java.version>17</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <sa-token.version>1.46.0</sa-token.version>
-        <hutool.version>5.8.47</hutool.version>
+        <hutool.version>5.8.48</hutool.version>
     </properties>
 
     <dependencies>
@@ -143,11 +145,11 @@
             <artifactId>sa-token-forest</artifactId>
             <version>${sa-token.version}</version>
         </dependency>
-        <!-- Jasypt 配置加密 https://www.cnblogs.com/hanease/p/18772373 -->
+        <!-- Jasypt 配置加密 https://jishuzhan.net/article/2062704438938251265 -->
         <dependency>
             <groupId>com.github.ulisesbocchio</groupId>
             <artifactId>jasypt-spring-boot-starter</artifactId>
-            <version>3.0.5</version>
+            <version>4.0.4</version>
         </dependency>
     </dependencies>
 

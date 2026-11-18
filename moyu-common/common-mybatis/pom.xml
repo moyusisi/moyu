@@ -29,7 +29,7 @@
         <!-- MyBatis-Flex MyBatis的轻量增强框架 参考 https://mybatis-flex.com/zh/intro/comparison.html -->
         <dependency>
             <groupId>com.mybatis-flex</groupId>
-            <artifactId>mybatis-flex-spring-boot-starter</artifactId>
+            <artifactId>mybatis-flex-spring-boot3-starter</artifactId>
             <version>1.11.8</version>
         </dependency>
     </dependencies>
