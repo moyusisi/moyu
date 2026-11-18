@@ -12,10 +12,9 @@ import com.moyu.common.authZ.model.LoginUser;
 import com.moyu.common.authZ.service.TokenService;
 import com.moyu.common.core.enums.ResultCodeEnum;
 import com.moyu.common.core.exception.BusinessException;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
 
 /**
  * 登录认证服务类
