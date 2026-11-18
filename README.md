@@ -5,7 +5,7 @@ moyuAdmin的多模块版本
 ```
 ── moyu
   ├── moyu-common                         // [依赖] 依赖包
-  ├── moyu-boot                           // [应用] 可运行的服务应用
+  ├── moyu-boot                           // [应用] 可运行的应用服务
   ├── moyu-gateway                        // [应用] 微服务网关
 ```
 
